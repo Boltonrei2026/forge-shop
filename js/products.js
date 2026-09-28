@@ -60,7 +60,8 @@ var COLORS = {
   olive:      { label: "Olive",        hex: "#6C7856" },
   cream:      { label: "Cream",        hex: "#F4E9CF" },
   slate:      { label: "Slate",        hex: "#575F5C" },
-  heather:    { label: "Heather Gray", hex: "#C7C8C6" }
+  heather:    { label: "Heather Gray", hex: "#C7C8C6" },
+  charcoal:   { label: "Charcoal",     hex: "#5B5B5B" }
 };
 
 /* PRODUCTS: one entry = one product. Each color has its own front + back image.
@@ -103,9 +104,11 @@ var PRODUCTS = [
     colors: {
       bright_red: { front: "images/products/mama-builds-brighter-tomorrows/bright_red-front.webp", back: "images/products/mama-builds-brighter-tomorrows/bright_red-back.webp" },
       pink:       { front: "images/products/mama-builds-brighter-tomorrows/pink-front.webp", back: "images/products/mama-builds-brighter-tomorrows/pink-back.webp" },
-      forest:     { front: "images/products/mama-builds-brighter-tomorrows/forest-front.webp", back: "images/products/mama-builds-brighter-tomorrows/forest-back.webp" },
+      cream:      { front: "images/products/mama-builds-brighter-tomorrows/cream-front.webp", back: "images/products/mama-builds-brighter-tomorrows/cream-back.webp" },
       black:      { front: "images/products/mama-builds-brighter-tomorrows/black-front.webp", back: "images/products/mama-builds-brighter-tomorrows/black-back.webp" },
-      cream:      { front: "images/products/mama-builds-brighter-tomorrows/cream-front.webp", back: "images/products/mama-builds-brighter-tomorrows/cream-back.webp" }
+      navy:       { front: "images/products/mama-builds-brighter-tomorrows/navy-front.webp", back: "images/products/mama-builds-brighter-tomorrows/navy-back.webp" },
+      charcoal:   { front: "images/products/mama-builds-brighter-tomorrows/charcoal-front.webp", back: "images/products/mama-builds-brighter-tomorrows/charcoal-back.webp" },
+      forest:     { front: "images/products/mama-builds-brighter-tomorrows/forest-front.webp", back: "images/products/mama-builds-brighter-tomorrows/forest-back.webp" }
     }
   },
   {
