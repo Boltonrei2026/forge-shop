@@ -136,7 +136,9 @@
   /* ---------- Hero ---------- */
   if (SITE.heroImage && SITE.heroImageIsProduct) $("#fm-hero-media").classList.add("is-product");
   $("#fm-hero-media").innerHTML = SITE.heroImage
-    ? '<img src="' + esc(SITE.heroImage) + '" alt="' + esc(SITE.heroImageAlt) + '">'
+    ? '<img src="' + esc(SITE.heroImage) + '"' +
+      (SITE.heroImageSmall ? ' srcset="' + esc(SITE.heroImageSmall) + ' 768w, ' + esc(SITE.heroImage) + ' 1536w" sizes="100vw"' : "") +
+      ' alt="' + esc(SITE.heroImageAlt) + '" fetchpriority="high">'
     : '<div class="fm-ph fm-ph--dark" role="img" aria-label="Image needed: hero campaign photo"><span class="fm-ph__title">Campaign photo</span><span class="fm-ph__path">SITE.heroImage</span></div>';
 
   /* ---------- Catalog: collection sections with editorial statements ---------- */

@@ -9,9 +9,10 @@ var SITE = {
   logoUrl: "",                  // >>> ADD: put your logo at images/brand/logo.png and set this to "images/brand/logo.png"
   logoAlt: "Forge Learning Academy",
 
-  heroImage: "images/products/forged-for-more/navy-back.webp",  // swap for a lifestyle/campaign photo when you have one (portrait, 1600x2000+)
-  heroImageIsProduct: true,     // true = show on white, uncropped (for shirt mockups). Set false for a real photo.
-  heroImageAlt: "Forged For More tee in navy, back view",
+  heroImage: "images/hero/family-sunset.webp",
+  heroImageSmall: "images/hero/family-sunset-768.webp",   // lighter version for phones (optional)
+  heroImageIsProduct: false,    // true only when the hero is a shirt mockup on white
+  heroImageAlt: "A family sitting on a rock ledge at sunset, wearing Forge Learning Academy shirts",
 
   tryForgeUrl: "#",             // >>> PASTE: your free-trial link
 

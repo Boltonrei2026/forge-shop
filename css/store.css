@@ -90,16 +90,16 @@ html.fm-lock{overflow:hidden}
 #forge-merch .fm-search input::placeholder{color:rgba(255,255,255,.45)}
 
 /* ---------- Hero: text left, campaign image right half ---------- */
-#forge-merch .fm-hero{display:grid;grid-template-columns:1fr 1fr;min-height:clamp(560px,calc(100vh - var(--fm-header-h)),900px)}
-#forge-merch .fm-hero__copy{display:flex;flex-direction:column;justify-content:center;
-  padding:clamp(48px,7vw,96px) clamp(24px,4vw,64px) clamp(48px,7vw,96px) max(var(--fm-gutter),calc((100vw - var(--fm-max))/2 + var(--fm-gutter)))}
+#forge-merch .fm-hero{display:flex;flex-direction:column}
+#forge-merch .fm-hero__copy{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:28px 64px;padding-top:clamp(40px,6vw,96px);padding-bottom:clamp(36px,4.5vw,64px)}
 #forge-merch .fm-kicker{font-family:var(--fm-display);font-weight:800;font-size:20px;letter-spacing:.16em;text-transform:uppercase;color:var(--fm-bright)}
-#forge-merch .fm-hero__title{margin-top:20px;font-size:clamp(68px,8.6vw,156px)}
+#forge-merch .fm-hero__title{margin-top:18px;font-size:clamp(60px,9vw,164px)}
 #forge-merch .fm-hero__title span{display:block}
-#forge-merch .fm-hero__sub{margin-top:36px;max-width:30ch;font-size:clamp(18px,1.6vw,21px);color:rgba(255,255,255,.78)}
-#forge-merch .fm-hero__copy .fm-btn{margin-top:40px;align-self:flex-start}
-#forge-merch .fm-hero__media{position:relative;background:var(--fm-blue);overflow:hidden}
-#forge-merch .fm-hero__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#forge-merch .fm-hero__aside{max-width:340px;padding-bottom:10px}
+#forge-merch .fm-hero__sub{font-size:clamp(18px,1.6vw,21px);color:rgba(255,255,255,.78)}
+#forge-merch .fm-hero__aside .fm-btn{margin-top:24px}
+#forge-merch .fm-hero__media{position:relative;width:100%;aspect-ratio:3/2;max-height:calc(100vh - var(--fm-header-h));background:var(--fm-blue);overflow:hidden}
+#forge-merch .fm-hero__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
 #forge-merch .fm-hero__media.is-product{background:#FFFFFF}
 #forge-merch .fm-hero__media.is-product img{object-fit:contain;padding:clamp(24px,4vw,64px)}
 
@@ -281,9 +281,8 @@ html.fm-lock{overflow:hidden}
   #forge-merch .fm-nav__cta a{width:100%;justify-content:center;color:var(--fm-navy);border:0;font-size:20px}
   #forge-merch .fm-header__actions{margin-left:auto}
   #forge-merch .fm-header__cta{display:none}
-  #forge-merch .fm-hero{grid-template-columns:1fr;min-height:0}
-  #forge-merch .fm-hero__media{order:-1;aspect-ratio:4/5;max-height:78vh}
-  #forge-merch .fm-hero__copy{padding:48px var(--fm-gutter) 72px}
+  #forge-merch .fm-hero__media{order:-1;max-height:none}
+  #forge-merch .fm-hero__copy{padding-top:40px;padding-bottom:64px}
   #forge-merch .fm-kids__inner{grid-template-columns:1fr}
   #forge-merch .fm-pd{grid-template-columns:1fr}
   #forge-merch .fm-pd__info{padding:32px 24px 36px}
