@@ -29,7 +29,7 @@ var SITE = {
      dimmed in the "Shop the collection" bar. `banner` is optional. */
   collections: {
     men:   { label: "Men",   title: "Men's collection",   intro: "Built for the ones who lead at home.", banner: "" },
-    women: { label: "Women", title: "Women's collection", intro: "", banner: "" },
+    women: { label: "Women", title: "Women's collection", intro: "For the women building something that lasts.", banner: "" },
     boys:  { label: "Boys",  title: "Boys' collection",   intro: "", banner: "" },
     girls: { label: "Girls", title: "Girls' collection",  intro: "", banner: "" }
   },
@@ -53,7 +53,12 @@ var TRACKS = [
 var COLORS = {
   navy:  { label: "Navy",  hex: "#4A5771" },
   red:   { label: "Red",   hex: "#A54A4A" },
-  black: { label: "Black", hex: "#4A4A4A" }
+  black: { label: "Black", hex: "#4A4A4A" },
+  bright_red: { label: "Red",          hex: "#D42343" },
+  pink:       { label: "Pink",         hex: "#F4D1D4" },
+  forest:     { label: "Forest Green", hex: "#23443D" },
+  olive:      { label: "Olive",        hex: "#6C7856" },
+  cream:      { label: "Cream",        hex: "#F4E9CF" }
 };
 
 /* PRODUCTS: one entry = one product. Each color has its own front + back image.
@@ -84,6 +89,34 @@ var PRODUCTS = [
       navy:  { front: "images/products/as-iron-sharpens-iron/navy-front.webp", back: "images/products/as-iron-sharpens-iron/navy-back.webp" },
       red:   { front: "images/products/as-iron-sharpens-iron/red-front.webp", back: "images/products/as-iron-sharpens-iron/red-back.webp" },
       black: { front: "images/products/as-iron-sharpens-iron/black-front.webp", back: "images/products/as-iron-sharpens-iron/black-back.webp" }
+    }
+  },
+  {
+    id: "mama-builds-brighter-tomorrows",
+    name: "Mama Builds Brighter Tomorrows",
+    price: 35,                                  // CONFIRM PRICE
+    categories: ["women", "faith"],
+    description: "MAMA BUILDS BRIGHTER TOMORROWS with a heart on the front. FAITH FAMILY FREEDOM on the back.",
+    sizes: ["S", "M", "L", "XL", "2XL"],        // CONFIRM SIZES
+    colors: {
+      bright_red: { front: "images/products/mama-builds-brighter-tomorrows/bright_red-front.webp", back: "images/products/mama-builds-brighter-tomorrows/bright_red-back.webp" },
+      pink:       { front: "images/products/mama-builds-brighter-tomorrows/pink-front.webp", back: "images/products/mama-builds-brighter-tomorrows/pink-back.webp" },
+      forest:     { front: "images/products/mama-builds-brighter-tomorrows/forest-front.webp", back: "images/products/mama-builds-brighter-tomorrows/forest-back.webp" },
+      black:      { front: "images/products/mama-builds-brighter-tomorrows/black-front.webp", back: "images/products/mama-builds-brighter-tomorrows/black-back.webp" },
+      cream:      { front: "images/products/mama-builds-brighter-tomorrows/cream-front.webp", back: "images/products/mama-builds-brighter-tomorrows/cream-back.webp" }
+    }
+  },
+  {
+    id: "home-is-the-classroom",
+    name: "Home Is the Classroom",
+    price: 35,                                  // CONFIRM PRICE
+    categories: ["women", "secular"],
+    description: "FORGE chest logo on the front. HOME IS THE CLASSROOM illustration on the back.",
+    sizes: ["S", "M", "L", "XL", "2XL"],        // CONFIRM SIZES
+    colors: {
+      olive: { front: "images/products/home-is-the-classroom/olive-front.webp", back: "images/products/home-is-the-classroom/olive-back.webp" },
+      cream: { front: "images/products/home-is-the-classroom/cream-front.webp", back: "images/products/home-is-the-classroom/cream-back.webp" },
+      black: { front: "images/products/home-is-the-classroom/black-front.webp", back: "images/products/home-is-the-classroom/black-back.webp" }
     }
   }
 ];

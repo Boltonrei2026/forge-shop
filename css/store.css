@@ -301,3 +301,4 @@ html.fm-lock{overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   #forge-merch *,#forge-merch *::before,#forge-merch *::after{animation:none!important;transition:none!important}
 }
+@media (min-width:1080px){#forge-merch .fm-product__head{min-height:calc(1.84 * clamp(32px,3.2vw,44px))}}
