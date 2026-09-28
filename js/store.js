@@ -56,6 +56,13 @@
         '<span class="fm-dot" style="--sw:' + c.hex + '" aria-hidden="true"></span>' + esc(c.label) + "</button>";
     }).join("") + "</div>";
   }
+  function colorDots(p, st) {
+    return '<div class="fm-dots" role="group" aria-label="Color">' + colorKeys(p).map(function (k) {
+      var c = colorInfo(k);
+      return '<button type="button" class="fm-dotbtn" data-action="color" data-value="' + esc(k) + '" aria-pressed="' + (k === st.color) +
+        '" aria-label="' + esc(c.label) + '" title="' + esc(c.label) + '"><span class="fm-dot" style="--sw:' + c.hex + '"></span></button>';
+    }).join("") + "</div>";
+  }
   function viewText(st) {
     return '<div class="fm-views" role="group" aria-label="View">' + ["front", "back"].map(function (v) {
       return '<button type="button" class="fm-view" data-action="view" data-value="' + v + '" aria-pressed="' + (v === st.view) + '">' + viewLabel(v) + "</button>";
@@ -160,7 +167,8 @@
     return '<article class="fm-product" data-id="' + esc(p.id) + '">' +
       '<div class="fm-product__head"><h3 class="fm-product__name">' + esc(p.name) + '</h3><span class="fm-price">' + money(p.price) + "</span></div>" +
       '<button type="button" class="fm-product__stage" data-action="details" aria-label="See details for ' + esc(p.name) + '"><div class="fm-stage" data-stage="card"></div></button>' +
-      '<div class="fm-product__opts">' + colorButtons(p, st) + viewText(st) + "</div>" +
+      '<div class="fm-product__opts">' + colorDots(p, st) + viewText(st) + "</div>" +
+      '<p class="fm-product__color" data-color-name>' + esc(colorInfo(st.color).label) + "</p>" +
       sizeButtons(p, st) +
       '<div class="fm-product__buy"><button type="button" class="fm-btn fm-btn--gold fm-btn--block" data-action="add">Add to cart</button>' +
       '<button type="button" class="fm-link" data-action="details">View details</button></div></article>';
