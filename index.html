@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forge Shop | Forge Learning Academy</title>
+<meta name="description" content="Purpose-driven apparel for a brighter generation, from Forge Learning Academy.">
+<meta name="theme-color" content="#0A1630">
+<meta property="og:title" content="Forge Shop | Forge Learning Academy">
+<meta property="og:description" content="Purpose-driven apparel for a brighter generation.">
+<meta property="og:image" content="images/products/forged-for-more/navy-back.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/store.css">
+</head>
+<body>
+
+<div id="forge-merch">
+
+  <header class="fm-header" id="fm-header">
+    <div class="fm-wrap fm-header__inner">
+      <a class="fm-logo" id="fm-logo" href="#"></a>
+      <nav class="fm-nav" id="fm-nav" aria-label="Main"><ul id="fm-nav-list"></ul></nav>
+      <div class="fm-header__actions">
+        <button type="button" class="fm-icon-btn" id="fm-search-open" aria-label="Search the shop" aria-expanded="false" aria-controls="fm-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <button type="button" class="fm-icon-btn" id="fm-cart-open" aria-label="Open cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          <span class="fm-cart-count" data-cart-count hidden>0</span>
+        </button>
+        <a class="fm-btn fm-btn--gold fm-header__cta" id="fm-try" href="#">Try Forge Free</a>
+        <button type="button" class="fm-icon-btn fm-menu-btn" id="fm-menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="fm-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="fm-search" id="fm-search" hidden>
+      <div class="fm-wrap">
+        <label for="fm-search-input" class="fm-sr">Search apparel</label>
+        <input type="search" id="fm-search-input" placeholder="Search apparel" autocomplete="off">
+        <button type="button" class="fm-icon-btn" id="fm-search-close" aria-label="Close search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="fm-hero" aria-labelledby="fm-hero-title">
+      <div class="fm-hero__copy">
+        <p class="fm-kicker">Forge Shop</p>
+        <h1 class="fm-hero__title fm-display" id="fm-hero-title"><span>Wear what</span><span>you're</span><span>building.</span></h1>
+        <p class="fm-hero__sub">Purpose-driven apparel for a brighter generation.</p>
+        <a class="fm-btn fm-btn--gold" href="#fm-shop" data-scroll>Shop the collection</a>
+      </div>
+      <div class="fm-hero__media" id="fm-hero-media"></div>
+    </section>
+
+    <section class="fm-catnav" id="fm-shop" aria-labelledby="fm-catnav-title">
+      <div class="fm-wrap">
+        <h2 class="fm-catnav__title fm-display" id="fm-catnav-title">Shop the collection</h2>
+        <div class="fm-catnav__bar">
+          <nav class="fm-catnav__list" id="fm-catnav-list" aria-label="Collections"></nav>
+          <div class="fm-tracks" role="group" aria-label="Filter designs">
+            <span class="fm-tracks__label">Designs</span>
+            <span id="fm-tracks"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="fm-catalog"></div>
+
+    <section class="fm-kids" id="fm-kids" aria-labelledby="fm-kids-title">
+      <div class="fm-wrap fm-kids__inner">
+        <p class="fm-kids__words fm-display" aria-hidden="true"><span>Kinder</span><span>Braver</span><span>Smarter</span><span>Stronger</span></p>
+        <div class="fm-kids__side">
+          <h2 class="fm-kids__title fm-display" id="fm-kids-title">The kids' collection</h2>
+          <p>Created to do great things.</p>
+          <div class="fm-kids__btns" id="fm-kids-btns"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fm-footer">
+    <div class="fm-wrap fm-footer__inner">
+      <div>
+        <a class="fm-logo" id="fm-footer-logo" href="#"></a>
+        <p class="fm-footer__tag">Purpose-driven apparel for a brighter generation.</p>
+      </div>
+      <nav class="fm-footer__links" id="fm-footer-links" aria-label="Footer"></nav>
+      <p class="fm-footer__copy">&copy; <span id="fm-year"></span> Forge Learning Academy</p>
+    </div>
+  </footer>
+
+  <button type="button" class="fm-fab" id="fm-fab" aria-label="Open cart" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+    <span class="fm-cart-count" data-cart-count hidden>0</span>
+  </button>
+
+  <!-- Product detail modal -->
+  <div class="fm-modal" id="fm-modal" hidden>
+    <div class="fm-modal__backdrop" data-modal-close></div>
+    <div class="fm-modal__panel fm-light" role="dialog" aria-modal="true" aria-labelledby="fm-modal-title">
+      <button type="button" class="fm-icon-btn fm-modal__close" data-modal-close aria-label="Close product details">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div id="fm-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Cart drawer -->
+  <div class="fm-drawer" id="fm-drawer" aria-hidden="true">
+    <div class="fm-drawer__backdrop" data-cart-close></div>
+    <aside class="fm-drawer__panel fm-light" role="dialog" aria-modal="true" aria-labelledby="fm-cart-title">
+      <div class="fm-drawer__head">
+        <h2 id="fm-cart-title">Your cart</h2>
+        <button type="button" class="fm-icon-btn" id="fm-cart-close" data-cart-close aria-label="Close cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <ul class="fm-drawer__items" id="fm-cart-items"></ul>
+      <div class="fm-drawer__foot">
+        <div class="fm-subtotal"><span>Subtotal</span><span id="fm-subtotal">$0</span></div>
+        <p class="fm-ship-note">Shipping calculated at checkout.</p>
+        <button type="button" class="fm-btn fm-btn--gold fm-btn--block" id="fm-checkout">Checkout</button>
+        <p class="fm-checkout-note" id="fm-checkout-note" role="status" hidden></p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="fm-toast" id="fm-toast" role="status" aria-live="polite"></div>
+</div>
+
+<script src="js/products.js"></script>
+<script src="js/store.js"></script>
+</body>
+</html>
