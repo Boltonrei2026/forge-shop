@@ -1,6 +1,6 @@
-/images/*
+﻿/images/*
   Cache-Control: public, max-age=604800
 /css/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: no-cache
 /js/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: no-cache
