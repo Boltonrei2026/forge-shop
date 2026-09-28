@@ -1,4 +1,4 @@
-/* ------------------------------------------------------------------
+﻿/* ------------------------------------------------------------------
    SITE SETTINGS
    Image paths are relative to this site (e.g. "images/products/..."). Any "" is an empty slot: put a
    path or URL between the quotes. Empty slots show a quiet labeled placeholder.
@@ -28,7 +28,7 @@ var SITE = {
      as at least one product lists it in `categories`. Until then it shows
      dimmed in the "Shop the collection" bar. `banner` is optional. */
   collections: {
-    men:   { label: "Men",   title: "Men's collection",   intro: "Two designs. Built with purpose.", banner: "" },
+    men:   { label: "Men",   title: "Men's collection",   intro: "Built for the ones who lead at home.", banner: "" },
     women: { label: "Women", title: "Women's collection", intro: "", banner: "" },
     boys:  { label: "Boys",  title: "Boys' collection",   intro: "", banner: "" },
     girls: { label: "Girls", title: "Girls' collection",  intro: "", banner: "" }
