@@ -58,7 +58,9 @@ var COLORS = {
   pink:       { label: "Pink",         hex: "#F4D1D4" },
   forest:     { label: "Forest Green", hex: "#23443D" },
   olive:      { label: "Olive",        hex: "#6C7856" },
-  cream:      { label: "Cream",        hex: "#F4E9CF" }
+  cream:      { label: "Cream",        hex: "#F4E9CF" },
+  slate:      { label: "Slate",        hex: "#575F5C" },
+  heather:    { label: "Heather Gray", hex: "#C7C8C6" }
 };
 
 /* PRODUCTS: one entry = one product. Each color has its own front + back image.
@@ -114,9 +116,12 @@ var PRODUCTS = [
     description: "FORGE chest logo on the front. HOME IS THE CLASSROOM illustration on the back.",
     sizes: ["S", "M", "L", "XL", "2XL"],        // CONFIRM SIZES
     colors: {
-      olive: { front: "images/products/home-is-the-classroom/olive-front.webp", back: "images/products/home-is-the-classroom/olive-back.webp" },
-      cream: { front: "images/products/home-is-the-classroom/cream-front.webp", back: "images/products/home-is-the-classroom/cream-back.webp" },
-      black: { front: "images/products/home-is-the-classroom/black-front.webp", back: "images/products/home-is-the-classroom/black-back.webp" }
+      olive:    { front: "images/products/home-is-the-classroom/olive-front.webp", back: "images/products/home-is-the-classroom/olive-back.webp" },
+      cream:    { front: "images/products/home-is-the-classroom/cream-front.webp", back: "images/products/home-is-the-classroom/cream-back.webp" },
+      navy:     { front: "images/products/home-is-the-classroom/navy-front.webp", back: "images/products/home-is-the-classroom/navy-back.webp" },
+      black:    { front: "images/products/home-is-the-classroom/black-front.webp", back: "images/products/home-is-the-classroom/black-back.webp" },
+      slate:    { front: "images/products/home-is-the-classroom/slate-front.webp", back: "images/products/home-is-the-classroom/slate-back.webp" },
+      heather:  { front: "images/products/home-is-the-classroom/heather-front.webp", back: "images/products/home-is-the-classroom/heather-back.webp" }
     }
   }
 ];
