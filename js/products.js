@@ -30,7 +30,7 @@ var SITE = {
   collections: {
     men:   { label: "Men",   title: "Men's collection",   intro: "Built for the ones who lead at home.", banner: "" },
     women: { label: "Women", title: "Women's collection", intro: "For the women building something that lasts.", banner: "" },
-    boys:  { label: "Boys",  title: "Boys' collection",   intro: "", banner: "" },
+    boys:  { label: "Boys",  title: "Boys' collection",   intro: "Made for the boys learning to lead.", banner: "" },
     girls: { label: "Girls", title: "Girls' collection",  intro: "", banner: "" }
   },
 
@@ -61,7 +61,12 @@ var COLORS = {
   cream:      { label: "Cream",        hex: "#F4E9CF" },
   slate:      { label: "Slate",        hex: "#575F5C" },
   heather:    { label: "Heather Gray", hex: "#C7C8C6" },
-  charcoal:   { label: "Charcoal",     hex: "#5B5B5B" }
+  charcoal:   { label: "Charcoal",     hex: "#5B5B5B" },
+  light_blue: { label: "Light Blue",   hex: "#C2D4E3" },
+  natural:    { label: "Natural",      hex: "#F8ECDC" },
+  sport_grey: { label: "Sport Grey",   hex: "#CECECE" },
+  white:      { label: "White",        hex: "#FFFFFF" },
+  royal:      { label: "Royal",        hex: "#386CC2" }
 };
 
 /* PRODUCTS: one entry = one product. Each color has its own front + back image.
@@ -76,9 +81,9 @@ var PRODUCTS = [
     description: "Vertical FORGED down the front. FORGED FOR MORE across the back with Forge branding and A BRIGHTER GENERATION.",
     sizes: ["S", "M", "L", "XL", "2XL"],
     colors: {
+      black: { front: "images/products/forged-for-more/black-front.webp", back: "images/products/forged-for-more/black-back.webp" },
       navy:  { front: "images/products/forged-for-more/navy-front.webp", back: "images/products/forged-for-more/navy-back.webp" },
-      red:   { front: "images/products/forged-for-more/red-front.webp", back: "images/products/forged-for-more/red-back.webp" },
-      black: { front: "images/products/forged-for-more/black-front.webp", back: "images/products/forged-for-more/black-back.webp" }
+      red:   { front: "images/products/forged-for-more/red-front.webp", back: "images/products/forged-for-more/red-back.webp" }
     }
   },
   {
@@ -89,9 +94,9 @@ var PRODUCTS = [
     description: "White cross with PROVERBS 27:17 on the front. The full verse on the back.",
     sizes: ["S", "M", "L", "XL", "2XL"],
     colors: {
+      black: { front: "images/products/as-iron-sharpens-iron/black-front.webp", back: "images/products/as-iron-sharpens-iron/black-back.webp" },
       navy:  { front: "images/products/as-iron-sharpens-iron/navy-front.webp", back: "images/products/as-iron-sharpens-iron/navy-back.webp" },
-      red:   { front: "images/products/as-iron-sharpens-iron/red-front.webp", back: "images/products/as-iron-sharpens-iron/red-back.webp" },
-      black: { front: "images/products/as-iron-sharpens-iron/black-front.webp", back: "images/products/as-iron-sharpens-iron/black-back.webp" }
+      red:   { front: "images/products/as-iron-sharpens-iron/red-front.webp", back: "images/products/as-iron-sharpens-iron/red-back.webp" }
     }
   },
   {
@@ -125,6 +130,37 @@ var PRODUCTS = [
       black:    { front: "images/products/home-is-the-classroom/black-front.webp", back: "images/products/home-is-the-classroom/black-back.webp" },
       slate:    { front: "images/products/home-is-the-classroom/slate-front.webp", back: "images/products/home-is-the-classroom/slate-back.webp" },
       heather:  { front: "images/products/home-is-the-classroom/heather-front.webp", back: "images/products/home-is-the-classroom/heather-back.webp" }
+    }
+  },
+  {
+    id: "learn-build-lead",
+    name: "Learn Build Lead",
+    price: 25,                                  // CONFIRM PRICE
+    categories: ["boys", "secular"],
+    description: "LEARN BUILD LEAD on the front. A BRIGHTER GENERATION with the Forge anvil on the back.",
+    sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
+    colors: {
+      light_blue: { front: "images/products/learn-build-lead/light_blue-front.webp", back: "images/products/learn-build-lead/light_blue-back.webp" },
+      bright_red: { front: "images/products/learn-build-lead/bright_red-front.webp", back: "images/products/learn-build-lead/bright_red-back.webp" },
+      natural:    { front: "images/products/learn-build-lead/natural-front.webp", back: "images/products/learn-build-lead/natural-back.webp" },
+      sport_grey: { front: "images/products/learn-build-lead/sport_grey-front.webp", back: "images/products/learn-build-lead/sport_grey-back.webp" },
+      charcoal:   { front: "images/products/learn-build-lead/charcoal-front.webp", back: "images/products/learn-build-lead/charcoal-back.webp" },
+      white:      { front: "images/products/learn-build-lead/white-front.webp", back: "images/products/learn-build-lead/white-back.webp" }
+    }
+  },
+  {
+    id: "forge-knight",
+    name: "Forge Knight",
+    price: 25,                                  // CONFIRM PRICE
+    categories: ["boys", "secular"],
+    description: "FORGE chest logo on the front. The Forge knight with FORGE LEARNING ACADEMY on the back.",
+    sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
+    colors: {
+      navy:       { front: "images/products/forge-knight/navy-front.webp", back: "images/products/forge-knight/navy-back.webp" },
+      royal:      { front: "images/products/forge-knight/royal-front.webp", back: "images/products/forge-knight/royal-back.webp" },
+      black:      { front: "images/products/forge-knight/black-front.webp", back: "images/products/forge-knight/black-back.webp" },
+      charcoal:   { front: "images/products/forge-knight/charcoal-front.webp", back: "images/products/forge-knight/charcoal-back.webp" },
+      bright_red: { front: "images/products/forge-knight/bright_red-front.webp", back: "images/products/forge-knight/bright_red-back.webp" }
     }
   }
 ];
