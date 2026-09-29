@@ -1,3 +1,4 @@
+/* Forge Shop store logic: pages, product switching, cart. No edits needed. */
 (function () {
   "use strict";
   var root = document.getElementById("forge-merch");
@@ -19,120 +20,47 @@
   var colorInfo = function (k) { return COLORS[k] || { label: k, hex: "#8A94A8" }; };
   var colorKeys = function (p) { return Object.keys(p.colors); };
   var viewLabel = function (v) { return v === "back" ? "Back" : "Front"; };
-  var scrollOpts = function () { return { behavior: reduceMotion ? "auto" : "smooth", block: "start" }; };
+  var collectionKeys = function () { return Object.keys(SITE.collections); };
+  var productsIn = function (key) { return PRODUCTS.filter(function (p) { return p.categories.indexOf(key) !== -1; }); };
+  var collectionOf = function (p) { return collectionKeys().find(function (k) { return p.categories.indexOf(k) !== -1; }); };
+  var productUrl = function (p, color) { return "/product/" + p.id + (color ? "?color=" + encodeURIComponent(color) : ""); };
 
   PRODUCTS.forEach(function (p) {
     colorKeys(p).forEach(function (k) {
-      if (!COLORS[k]) console.warn('[Forge merch] Color "' + k + '" on "' + p.id + '" is missing from COLORS.');
+      if (!COLORS[k]) console.warn('[Forge shop] Color "' + k + '" on "' + p.id + '" is missing from COLORS.');
     });
   });
 
-  /* ---------- Image (or placeholder) for exactly one product + color + view ---------- */
-  function media(p, colorKey, view, variant) {
-    var c = colorInfo(colorKey);
-    var url = (p.colors[colorKey] || {})[view];
-    var decorative = variant === "thumb" || variant === "line";
-    if (url) {
-      var alt = decorative ? "" : p.name + ", " + c.label + ", " + view + " view";
-      return '<img src="' + esc(url) + '" alt="' + esc(alt) + '" decoding="async"' + (variant === "card" ? ' loading="lazy"' : "") + ">";
-    }
-    if (decorative) return '<div class="fm-ph fm-ph--thumb" aria-hidden="true"><span class="fm-ph__dot" style="--ph:' + c.hex + '"></span></div>';
-    return '<div class="fm-ph" role="img" aria-label="Image needed: ' + esc(p.name + ", " + c.label + ", " + view) + '">' +
-      '<span class="fm-ph__dot" style="--ph:' + c.hex + '"></span>' +
-      '<span class="fm-ph__title">' + esc(p.name) + "</span>" +
-      '<span class="fm-ph__meta">' + esc(c.label) + ", " + view + "</span>" +
-      '<span class="fm-ph__path">' + esc(p.id) + " / " + esc(colorKey) + " / " + view + "</span></div>";
+  /* ---------- Images ---------- */
+  function imgUrl(p, color, view) { return (p.colors[color] || {})[view] || ""; }
+  function img(p, color, view, opts) {
+    opts = opts || {};
+    var url = imgUrl(p, color, view);
+    var alt = opts.decorative ? "" : p.name + ", " + colorInfo(color).label + ", " + view + " view";
+    if (!url) return '<div class="fm-tile__img--empty' + (opts.cls ? " " + opts.cls : "") + '" style="position:absolute;inset:0">' + esc(p.name + " " + colorInfo(color).label + " " + view) + "</div>";
+    return '<img src="' + esc(url) + '" alt="' + esc(alt) + '"' + (opts.cls ? ' class="' + opts.cls + '"' : "") +
+      (opts.eager ? "" : ' loading="lazy"') + ' decoding="async">';
   }
-  function preload(p, colorKey) {
-    var slot = p.colors[colorKey] || {};
-    ["front", "back"].forEach(function (v) { if (slot[v]) { var i = new Image(); i.src = slot[v]; } });
+  function preload(p, color) {
+    ["front", "back"].forEach(function (v) { var u = imgUrl(p, color, v); if (u) { var i = new Image(); i.src = u; } });
   }
 
-  /* ---------- Controls shared by product blocks and the modal ---------- */
-  function colorButtons(p, st) {
-    return '<div class="fm-colors" role="group" aria-label="Color">' + colorKeys(p).map(function (k) {
-      var c = colorInfo(k);
-      return '<button type="button" class="fm-color" data-action="color" data-value="' + esc(k) + '" aria-pressed="' + (k === st.color) + '">' +
-        '<span class="fm-dot" style="--sw:' + c.hex + '" aria-hidden="true"></span>' + esc(c.label) + "</button>";
-    }).join("") + "</div>";
-  }
-  function colorDots(p, st) {
-    return '<div class="fm-dots" role="group" aria-label="Color">' + colorKeys(p).map(function (k) {
-      var c = colorInfo(k);
-      return '<button type="button" class="fm-dotbtn" data-action="color" data-value="' + esc(k) + '" aria-pressed="' + (k === st.color) +
-        '" aria-label="' + esc(c.label) + '" title="' + esc(c.label) + '"><span class="fm-dot" style="--sw:' + c.hex + '"></span></button>';
-    }).join("") + "</div>";
-  }
-  function viewText(st) {
-    return '<div class="fm-views" role="group" aria-label="View">' + ["front", "back"].map(function (v) {
-      return '<button type="button" class="fm-view" data-action="view" data-value="' + v + '" aria-pressed="' + (v === st.view) + '">' + viewLabel(v) + "</button>";
-    }).join("") + "</div>";
-  }
-  function viewThumbs(st) {
-    return '<div class="fm-pd__thumbs" role="group" aria-label="View">' + ["front", "back"].map(function (v) {
-      return '<button type="button" class="fm-thumb" data-action="view" data-value="' + v + '" aria-pressed="' + (v === st.view) + '">' +
-        '<span class="fm-thumb__img" data-thumb="' + v + '"></span>' + viewLabel(v) + "</button>";
-    }).join("") + "</div>";
-  }
-  function sizeButtons(p, st) {
-    return '<div class="fm-sizes" role="group" aria-label="Size">' + p.sizes.map(function (s) {
-      return '<button type="button" class="fm-size" data-action="size" data-value="' + esc(s) + '" aria-pressed="' + (s === st.size) + '">' + esc(s) + "</button>";
-    }).join("") + '</div><p class="fm-error" data-error hidden>Choose a size to add this to your cart.</p>';
-  }
-
-  /* Sync a block to its state. The main image always comes from color + view together. */
-  function sync(el, p, st, animate) {
-    var stage = $("[data-stage]", el);
-    if (stage) {
-      stage.innerHTML = media(p, st.color, st.view, stage.getAttribute("data-stage"));
-      if (animate && !reduceMotion && stage.firstElementChild) stage.firstElementChild.classList.add("fm-fade");
-      stage.setAttribute("data-color", st.color);
-      stage.setAttribute("data-view", st.view);
-    }
-    $$("[data-thumb]", el).forEach(function (t) { t.innerHTML = media(p, st.color, t.getAttribute("data-thumb"), "thumb"); });
-    [["color", st.color], ["view", st.view], ["size", st.size]].forEach(function (pair) {
-      $$('[data-action="' + pair[0] + '"]', el).forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-value") === pair[1])); });
-    });
-    var cn = $("[data-color-name]", el); if (cn) cn.textContent = colorInfo(st.color).label;
-    var q = $("[data-qty]", el); if (q) q.textContent = st.qty;
-    var dec = $('[data-action="qty-dec"]', el); if (dec) dec.disabled = st.qty <= 1;
-  }
-  function syncProduct(p, except) {
-    $$('#fm-catalog [data-id="' + p.id + '"]').forEach(function (el) { if (el !== except) sync(el, p, cardState[p.id], false); });
-  }
-
-  function handle(action, value, el, p, st) {
-    if (action === "color") { st.color = value; sync(el, p, st, true); preload(p, value); }
-    else if (action === "view") { st.view = value; sync(el, p, st, true); }
-    else if (action === "size") { st.size = value; $("[data-error]", el).hidden = true; sync(el, p, st, false); }
-    else if (action === "qty-inc") { st.qty = Math.min(99, st.qty + 1); sync(el, p, st, false); }
-    else if (action === "qty-dec") { st.qty = Math.max(1, st.qty - 1); sync(el, p, st, false); }
-    else if (action === "add") {
-      if (!st.size) {
-        $("[data-error]", el).hidden = false;
-        var first = $('[data-action="size"]', el); if (first) first.focus();
-        return false;
-      }
-      addToCart(p.id, st.color, st.size, st.qty || 1);
-      return true;
-    }
-    return false;
-  }
-
-  /* ---------- Header, logo, nav ---------- */
+  /* ---------- Header, nav, footer ---------- */
+  var isShopLink = function (url) { return url.charAt(0) === "#" || url === "/"; };
   function logoHTML() {
     return SITE.logoUrl ? '<img src="' + esc(SITE.logoUrl) + '" alt="' + esc(SITE.logoAlt) + '">' : '<span class="fm-logo__text">Forge Learning Academy</span>';
   }
-  var homeUrl = (SITE.nav[0] && SITE.nav[0].url) || "#";
+  var homeUrl = (SITE.nav[0] && SITE.nav[0].url) || "/";
   if (!SITE.showHeader) { $("#fm-header").hidden = true; $("#fm-fab").hidden = false; }
   ["#fm-logo", "#fm-footer-logo"].forEach(function (s) { $(s).href = homeUrl; $(s).innerHTML = logoHTML(); });
   $("#fm-try").href = SITE.tryForgeUrl;
-  var anchorAttr = function (url) { return url.charAt(0) === "#" ? " data-scroll" : ""; };
   $("#fm-nav-list").innerHTML = SITE.nav.map(function (l) {
-    return '<li><a href="' + esc(l.url) + '"' + (l.current ? ' aria-current="page"' : "") + anchorAttr(l.url) + ">" + esc(l.label) + "</a></li>";
+    var shop = isShopLink(l.url);
+    return '<li><a href="' + (shop ? "/" : esc(l.url)) + '"' + (shop ? " data-link" : "") + (l.current ? ' aria-current="page"' : "") + ">" + esc(l.label) + "</a></li>";
   }).join("") + '<li class="fm-nav__cta"><a class="fm-btn fm-btn--gold" href="' + esc(SITE.tryForgeUrl) + '">Try Forge Free</a></li>';
   $("#fm-footer-links").innerHTML = SITE.nav.map(function (l) {
-    return '<a href="' + esc(l.url) + '"' + anchorAttr(l.url) + ">" + esc(l.label) + "</a>";
+    var shop = isShopLink(l.url);
+    return '<a href="' + (shop ? "/" : esc(l.url)) + '"' + (shop ? " data-link" : "") + ">" + esc(l.label) + "</a>";
   }).join("");
   $("#fm-year").textContent = new Date().getFullYear();
 
@@ -140,178 +68,230 @@
   function setMenu(open) { nav.classList.toggle("is-open", open); menuBtn.setAttribute("aria-expanded", String(open)); }
   menuBtn.addEventListener("click", function () { setMenu(!nav.classList.contains("is-open")); });
 
-  /* ---------- Hero ---------- */
-  if (SITE.heroImage && SITE.heroImageIsProduct) $("#fm-hero-media").classList.add("is-product");
-  $("#fm-hero-media").innerHTML = SITE.heroImage
-    ? '<img src="' + esc(SITE.heroImage) + '"' +
-      (SITE.heroImageSmall ? ' srcset="' + esc(SITE.heroImageSmall) + ' 768w, ' + esc(SITE.heroImage) + ' 1536w" sizes="100vw"' : "") +
-      ' alt="' + esc(SITE.heroImageAlt) + '" fetchpriority="high">'
-    : '<div class="fm-ph fm-ph--dark" role="img" aria-label="Image needed: hero campaign photo"><span class="fm-ph__title">Campaign photo</span><span class="fm-ph__path">SITE.heroImage</span></div>';
-
-  /* ---------- Catalog: collection sections with editorial statements ---------- */
-  var activeTrack = "all", searchQuery = "";
-  var cardState = {};
-  PRODUCTS.forEach(function (p) { cardState[p.id] = { color: colorKeys(p)[0], view: "front", size: null, qty: 1 }; });
-  var productsIn = function (key) { return PRODUCTS.filter(function (p) { return p.categories.indexOf(key) !== -1; }); };
-
-  function passes(p) {
-    if (activeTrack !== "all" && p.categories.indexOf(activeTrack) === -1) return false;
-    var words = searchQuery.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    if (!words.length) return true;
-    var hay = [p.name, p.description].concat(p.categories, colorKeys(p).map(function (k) { return colorInfo(k).label; })).join(" ").toLowerCase();
-    return words.every(function (w) { return hay.indexOf(w) !== -1; });
+  function renderSubnav(active) {
+    $("#fm-subnav").innerHTML = '<a href="/" data-link' + (active === "home" ? ' aria-current="page"' : "") + ">Shop</a>" +
+      collectionKeys().map(function (k) {
+        return '<a href="/' + esc(k) + '" data-link data-empty="' + !productsIn(k).length + '"' + (active === k ? ' aria-current="page"' : "") + ">" +
+          esc(SITE.collections[k].label) + "</a>";
+      }).join("");
   }
 
-  function productHTML(p) {
-    var st = cardState[p.id];
-    return '<article class="fm-product" data-id="' + esc(p.id) + '">' +
-      '<div class="fm-product__head"><h3 class="fm-product__name">' + esc(p.name) + '</h3><span class="fm-price">' + money(p.price) + "</span></div>" +
-      '<button type="button" class="fm-product__stage" data-action="details" aria-label="See details for ' + esc(p.name) + '"><div class="fm-stage" data-stage="card"></div></button>' +
-      '<div class="fm-product__opts">' + colorDots(p, st) + viewText(st) + "</div>" +
-      '<p class="fm-product__color" data-color-name>' + esc(colorInfo(st.color).label) + "</p>" +
-      sizeButtons(p, st) +
-      '<div class="fm-product__buy"><button type="button" class="fm-btn fm-btn--gold fm-btn--block" data-action="add">Add to cart</button>' +
-      '<button type="button" class="fm-link" data-action="details">View details</button></div></article>';
+  /* ---------- Router ---------- */
+  var view = $("#fm-view");
+  function go(url, replace) {
+    if (replace) history.replaceState(null, "", url); else history.pushState(null, "", url);
+    render(true);
   }
+  function setTitle(t) { document.title = (t ? t + " | " : "") + "Forge Shop | Forge Learning Academy"; }
 
-  function renderNav() {
-    $("#fm-catnav-list").innerHTML = Object.keys(SITE.collections).map(function (k) {
-      var empty = !productsIn(k).length;
-      return '<button type="button" class="fm-catlink" data-jump="' + esc(k) + '" data-empty="' + empty + '">' + esc(SITE.collections[k].label) +
-        (empty ? '<span class="fm-sr">, not in the shop yet</span>' : "") + "</button>";
-    }).join("");
-    $("#fm-tracks").innerHTML = TRACKS.map(function (t) {
-      return '<button type="button" class="fm-track" data-track="' + esc(t.id) + '" aria-pressed="' + (t.id === activeTrack) + '">' + esc(t.label) + "</button>";
-    }).join("");
-    $("#fm-tracks").style.display = "contents";
-    var kidsBtns = ["boys", "girls"].filter(function (k) { return SITE.collections[k] && productsIn(k).length; });
-    $("#fm-kids-btns").innerHTML = kidsBtns.map(function (k, i) {
-      return '<button type="button" class="fm-btn ' + (i ? "fm-btn--line" : "fm-btn--gold") + '" data-jump="' + k + '">Shop ' + esc(SITE.collections[k].label.toLowerCase()) + "</button>";
-    }).join("");
-  }
-
-  function renderCatalog() {
-    var html = "", n = 0, anyShown = false, searching = !!searchQuery.trim();
-    var track = TRACKS.find(function (t) { return t.id === activeTrack; });
-    Object.keys(SITE.collections).forEach(function (key) {
-      var all = productsIn(key); if (!all.length) return;
-      var shown = all.filter(passes);
-      if (searching && !shown.length) return;
-      anyShown = anyShown || shown.length > 0;
-      var c = SITE.collections[key];
-      html += '<section class="fm-collection" id="fm-c-' + esc(key) + '" aria-labelledby="fm-c-' + esc(key) + '-t"><div class="fm-wrap">' +
-        '<div class="fm-collection__head"><h2 class="fm-collection__title fm-display" id="fm-c-' + esc(key) + '-t">' + esc(c.title || c.label) + "</h2>" +
-        (c.intro ? '<p class="fm-collection__intro">' + esc(c.intro) + "</p>" : "") + "</div>" +
-        (c.banner ? '<div class="fm-collection__banner"><img src="' + esc(c.banner) + '" alt="" loading="lazy"></div>' : "") +
-        (shown.length ? '<div class="fm-products">' + shown.map(productHTML).join("") + "</div>"
-          : '<p class="fm-collection__none">No ' + esc(track.label.toLowerCase()) + " designs in this collection yet.</p>") +
-        "</div></section>";
-      if (!searching && SITE.statements[n]) {
-        html += '<section class="fm-statement" aria-label="' + esc(SITE.statements[n]) + '"><div class="fm-wrap"><p class="fm-display">' + esc(SITE.statements[n]) + "</p></div></section>";
-      }
-      n++;
-    });
-    if (searching && !anyShown) {
-      html = '<div class="fm-wrap fm-search-empty"><p>Nothing matches "' + esc(searchQuery.trim()) + '".</p><button type="button" class="fm-btn fm-btn--line" data-reset>Clear search</button></div>';
-    }
-    $("#fm-catalog").innerHTML = html;
-    PRODUCTS.forEach(function (p) { syncProduct(p, null); });
-  }
-
-  function setTrack(id) {
-    activeTrack = id;
-    $$(".fm-track").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-track") === id)); });
-    renderCatalog();
-  }
-  function clearSearch() { searchQuery = ""; $("#fm-search-input").value = ""; }
-  function jumpTo(key) {
-    var c = SITE.collections[key];
-    if (!productsIn(key).length) { toast(c.label + " isn't in the shop yet."); return; }
-    if (searchQuery.trim() || (activeTrack !== "all" && !productsIn(key).some(passes))) { clearSearch(); activeTrack = "all"; renderNav(); renderCatalog(); }
+  function render(scrollTop) {
+    var path = location.pathname.replace(/\/+$/, "") || "/";
+    var q = new URLSearchParams(location.search);
     setMenu(false);
-    var sec = $("#fm-c-" + key); if (sec) sec.scrollIntoView(scrollOpts());
+    var m;
+    if (path === "/" || path === "/index.html") { renderSubnav("home"); homePage(); }
+    else if ((m = path.match(/^\/product\/([^\/]+)$/)) && byId(decodeURIComponent(m[1]))) {
+      var p = byId(decodeURIComponent(m[1])); renderSubnav(collectionOf(p)); productPage(p, q.get("color"));
+    }
+    else if ((m = path.match(/^\/([a-z0-9-]+)$/)) && SITE.collections[m[1]]) { renderSubnav(m[1]); collectionPage(m[1], q.get("designs") || "all"); }
+    else if (path === "/search") { renderSubnav(""); searchPage(q.get("q") || ""); }
+    else { renderSubnav(""); notFoundPage(); }
+    if (scrollTop) { window.scrollTo(0, 0); view.focus({ preventScroll: true }); }
   }
 
   root.addEventListener("click", function (e) {
-    var j = e.target.closest("[data-jump]"); if (j) { jumpTo(j.getAttribute("data-jump")); return; }
-    var t = e.target.closest("[data-track]"); if (t) { setTrack(t.getAttribute("data-track")); return; }
-    if (e.target.closest("#fm-catalog [data-reset]")) { clearSearch(); renderCatalog(); return; }
-    var a = e.target.closest("a[data-scroll]");
-    if (a) {
-      var target = document.querySelector(a.getAttribute("href"));
-      if (target) { e.preventDefault(); setMenu(false); target.scrollIntoView(scrollOpts()); }
-      return;
-    }
-    var btn = e.target.closest("#fm-catalog [data-action]"); if (!btn) return;
-    var block = btn.closest(".fm-product"); if (!block) return;
-    var p = byId(block.getAttribute("data-id")), st = cardState[p.id], action = btn.getAttribute("data-action");
-    if (action === "details") { openModal(p.id, btn); return; }
-    var added = handle(action, btn.getAttribute("data-value"), block, p, st);
-    syncProduct(p, block);
-    if (added && action === "add") openCart(btn);
+    var a = e.target.closest("a[data-link]");
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    closeCart(false);
+    go(a.getAttribute("href"));
   });
+  window.addEventListener("popstate", function () { render(false); });
+
+  function crumbs(items) {
+    return '<nav class="fm-crumbs" aria-label="Breadcrumb">' + items.map(function (it, i) {
+      var last = i === items.length - 1;
+      return (i ? '<span aria-hidden="true">/</span>' : "") +
+        (last ? '<span aria-current="page">' + esc(it[0]) + "</span>" : '<a href="' + it[1] + '" data-link>' + esc(it[0]) + "</a>");
+    }).join("") + "</nav>";
+  }
+
+  /* ---------- Product card (links to the product page) ---------- */
+  var cardColor = {};
+  function cardHTML(p) {
+    var c = cardColor[p.id] || colorKeys(p)[0];
+    return '<article class="fm-card" data-id="' + esc(p.id) + '">' +
+      '<a class="fm-card__media" href="' + productUrl(p, c) + '" data-link aria-label="' + esc(p.name) + '">' +
+        img(p, c, "front", { cls: "is-front", decorative: true }) + img(p, c, "back", { cls: "is-back", decorative: true }) + "</a>" +
+      '<div class="fm-card__meta"><h3 class="fm-card__name"><a href="' + productUrl(p, c) + '" data-link>' + esc(p.name) + "</a></h3>" +
+        '<span class="fm-card__price">' + money(p.price) + "</span></div>" +
+      '<div class="fm-card__colors"><div class="fm-dots" role="group" aria-label="Color">' + colorKeys(p).map(function (k) {
+        var ci = colorInfo(k);
+        return '<button type="button" class="fm-dotbtn" data-card-color="' + esc(k) + '" aria-pressed="' + (k === c) + '" aria-label="' + esc(ci.label) +
+          '" title="' + esc(ci.label) + '"><span class="fm-dot" style="--sw:' + ci.hex + '"></span></button>';
+      }).join("") + '</div></div><p class="fm-card__colorname">' + esc(colorInfo(c).label) + "</p></article>";
+  }
+  function gridHTML(list) { return '<div class="fm-grid">' + list.map(cardHTML).join("") + "</div>"; }
+
+  view.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-card-color]"); if (!b) return;
+    var card = b.closest(".fm-card"), p = byId(card.getAttribute("data-id")), c = b.getAttribute("data-card-color");
+    cardColor[p.id] = c; preload(p, c);
+    var tmp = document.createElement("div"); tmp.innerHTML = cardHTML(p);
+    card.replaceWith(tmp.firstChild);
+    var again = $('.fm-card[data-id="' + p.id + '"] [data-card-color="' + c + '"]', view); if (again) again.focus();
+  });
+
+  /* ---------- Home ---------- */
+  function homePage() {
+    setTitle("");
+    var tiles = collectionKeys().map(function (k) {
+      var c = SITE.collections[k], list = productsIn(k), first = list[0];
+      var pic = c.image ? '<img src="' + esc(c.image) + '" alt="" loading="lazy">'
+        : first ? img(first, colorKeys(first)[0], "front", { decorative: true }) : "";
+      return '<a class="fm-tile" href="/' + esc(k) + '" data-link>' +
+        (pic ? '<div class="fm-tile__img">' + pic + "</div>" : '<div class="fm-tile__img fm-tile__img--empty">Not in the shop yet</div>') +
+        '<div class="fm-tile__label"><span class="fm-tile__name">' + esc(c.label) + '</span><span class="fm-tile__count">' +
+        (list.length ? list.length + (list.length === 1 ? " design" : " designs") : "") + "</span></div></a>";
+    }).join("");
+    var kids = ["boys", "girls"].filter(function (k) { return SITE.collections[k] && productsIn(k).length; });
+    var heroImg = SITE.heroImage
+      ? '<img src="' + esc(SITE.heroImage) + '"' + (SITE.heroImageSmall ? ' srcset="' + esc(SITE.heroImageSmall) + " 768w, " + esc(SITE.heroImage) + ' 1536w" sizes="100vw"' : "") +
+        ' alt="' + esc(SITE.heroImageAlt || "") + '" fetchpriority="high">' : "";
+    view.innerHTML =
+      '<section class="fm-hero" aria-labelledby="fm-hero-title"><div class="fm-wrap fm-hero__copy"><div>' +
+        '<p class="fm-kicker">Forge Shop</p><h1 class="fm-hero__title fm-display" id="fm-hero-title"><span>Wear what</span><span>you\'re building.</span></h1></div>' +
+        '<div class="fm-hero__aside"><p class="fm-hero__sub">Purpose-driven apparel for a brighter generation.</p>' +
+        '<a class="fm-btn fm-btn--gold" href="#fm-collections" data-jump>Shop the collection</a></div></div>' +
+        '<div class="fm-hero__media' + (SITE.heroImageIsProduct ? " is-product" : "") + '">' + heroImg + "</div></section>" +
+      '<section class="fm-home-section" id="fm-collections" aria-labelledby="fm-coll-title"><div class="fm-wrap">' +
+        '<h2 class="fm-section-title fm-display" id="fm-coll-title">Shop by collection</h2><div class="fm-tiles">' + tiles + "</div></div></section>" +
+      (SITE.statements && SITE.statements[0] ? '<section class="fm-statement"><div class="fm-wrap"><p class="fm-display">' + esc(SITE.statements[0]) + "</p></div></section>" : "") +
+      '<section class="fm-kids" aria-labelledby="fm-kids-title"><div class="fm-wrap fm-kids__inner">' +
+        '<p class="fm-kids__words fm-display" aria-hidden="true"><span>Kinder</span><span>Braver</span><span>Smarter</span><span>Stronger</span></p>' +
+        '<div class="fm-kids__side"><h2 class="fm-section-title fm-display" id="fm-kids-title">The kids\' collection</h2><p>Created to do great things.</p>' +
+        (kids.length ? '<div class="fm-kids__btns">' + kids.map(function (k, i) {
+          return '<a class="fm-btn ' + (i ? "fm-btn--line" : "fm-btn--gold") + '" href="/' + k + '" data-link>Shop ' + esc(SITE.collections[k].label.toLowerCase()) + "</a>";
+        }).join("") + "</div>" : "") + "</div></div></section>";
+    var jump = $("[data-jump]", view);
+    jump.addEventListener("click", function (e) {
+      e.preventDefault(); $("#fm-collections").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    });
+  }
+
+  /* ---------- Collection ---------- */
+  function collectionPage(key, track) {
+    var c = SITE.collections[key], all = productsIn(key);
+    if (!TRACKS.some(function (t) { return t.id === track; })) track = "all";
+    setTitle(c.title || c.label);
+    var shown = all.filter(function (p) { return track === "all" || p.categories.indexOf(track) !== -1; });
+    var t = TRACKS.find(function (x) { return x.id === track; });
+    view.innerHTML = '<div class="fm-page"><div class="fm-wrap">' + crumbs([["Shop", "/"], [c.label, "/" + key]]) +
+      '<div class="fm-page__head"><div><h1 class="fm-page__title fm-display">' + esc(c.title || c.label) + "</h1>" +
+        (c.intro ? '<p class="fm-page__intro">' + esc(c.intro) + "</p>" : "") + "</div>" +
+        (all.length ? '<div class="fm-tracks" role="group" aria-label="Filter designs"><span class="fm-tracks__label">Designs</span>' +
+          TRACKS.map(function (x) { return '<button type="button" class="fm-track" data-track="' + esc(x.id) + '" aria-pressed="' + (x.id === track) + '">' + esc(x.label) + "</button>"; }).join("") + "</div>" : "") +
+      "</div>" +
+      (!all.length ? '<div class="fm-note"><p>The ' + esc(c.label.toLowerCase()) + ' collection isn\'t in the shop yet.</p><a class="fm-btn fm-btn--gold" href="/" data-link>Back to the shop</a></div>'
+        : shown.length ? gridHTML(shown)
+        : '<div class="fm-note"><p>No ' + esc(t.label.toLowerCase()) + ' designs in this collection yet.</p></div>') +
+      "</div></div>";
+    $$("[data-track]", view).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var id = b.getAttribute("data-track");
+        history.replaceState(null, "", "/" + key + (id === "all" ? "" : "?designs=" + id));
+        collectionPage(key, id);
+      });
+    });
+  }
+
+  /* ---------- Product ---------- */
+  function productPage(p, colorParam) {
+    var key = collectionOf(p), c = key ? SITE.collections[key] : null;
+    var st = { color: p.colors[colorParam] ? colorParam : colorKeys(p)[0], view: "front", size: null, qty: 1 };
+    setTitle(p.name);
+    var related = key ? productsIn(key).filter(function (x) { return x.id !== p.id; }) : [];
+    view.innerHTML = '<div class="fm-page"><div class="fm-wrap">' +
+      crumbs([["Shop", "/"]].concat(c ? [[c.label, "/" + key]] : [], [[p.name, productUrl(p)]])) +
+      '<div class="fm-pdp" data-pdp><div class="fm-pdp__media"><div class="fm-pdp__stage" data-stage></div>' +
+        '<div class="fm-thumbs" role="group" aria-label="View">' + ["front", "back"].map(function (v) {
+          return '<button type="button" class="fm-thumb" data-action="view" data-value="' + v + '"><span class="fm-thumb__img" data-thumb="' + v + '"></span>' + viewLabel(v) + "</button>";
+        }).join("") + "</div></div>" +
+      '<div class="fm-pdp__info"><h1 class="fm-pdp__name">' + esc(p.name) + '</h1><p class="fm-pdp__price">' + money(p.price) + "</p>" +
+        (p.description ? '<p class="fm-pdp__desc">' + esc(p.description) + "</p>" : "") +
+        '<p class="fm-pdp__label">Color<span data-color-name></span></p><div class="fm-dots" role="group" aria-label="Color">' + colorKeys(p).map(function (k) {
+          var ci = colorInfo(k);
+          return '<button type="button" class="fm-dotbtn" data-action="color" data-value="' + esc(k) + '" aria-label="' + esc(ci.label) + '" title="' + esc(ci.label) +
+            '"><span class="fm-dot" style="--sw:' + ci.hex + '"></span></button>';
+        }).join("") + "</div>" +
+        '<p class="fm-pdp__label">Size</p><div class="fm-sizes" role="group" aria-label="Size">' + p.sizes.map(function (s) {
+          return '<button type="button" class="fm-size" data-action="size" data-value="' + esc(s) + '">' + esc(s) + "</button>";
+        }).join("") + '</div><p class="fm-error" data-error hidden>Choose a size to add this to your cart.</p>' +
+        '<p class="fm-pdp__label">Quantity</p><div class="fm-qty"><button type="button" data-action="qty-dec" aria-label="Decrease quantity">&minus;</button>' +
+        '<span data-qty aria-live="polite">1</span><button type="button" data-action="qty-inc" aria-label="Increase quantity">+</button></div>' +
+        '<div class="fm-pdp__buy"><button type="button" class="fm-btn fm-btn--gold fm-btn--block" data-action="add">Add to cart</button>' +
+        '<p class="fm-pdp__ship">Shipping calculated at checkout.</p></div></div></div>' +
+      (related.length ? '<section class="fm-related" aria-labelledby="fm-rel-title"><h2 class="fm-section-title fm-display" id="fm-rel-title">More from the ' +
+        esc(c.label.toLowerCase()) + "'s collection</h2>" + gridHTML(related) + "</section>" : "") +
+      "</div></div>";
+    var el = $("[data-pdp]", view);
+    function sync(animate) {
+      var stage = $("[data-stage]", el);
+      stage.innerHTML = img(p, st.color, st.view, { eager: true });
+      if (animate && !reduceMotion && stage.firstElementChild) stage.firstElementChild.classList.add("fm-fade");
+      stage.setAttribute("data-color", st.color); stage.setAttribute("data-view", st.view);
+      $$("[data-thumb]", el).forEach(function (t) { t.innerHTML = img(p, st.color, t.getAttribute("data-thumb"), { decorative: true, eager: true }); });
+      [["color", st.color], ["view", st.view], ["size", st.size]].forEach(function (pair) {
+        $$('[data-action="' + pair[0] + '"]', el).forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-value") === pair[1])); });
+      });
+      $("[data-color-name]", el).textContent = colorInfo(st.color).label;
+      $("[data-qty]", el).textContent = st.qty;
+      $('[data-action="qty-dec"]', el).disabled = st.qty <= 1;
+    }
+    el.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-action]"); if (!b) return;
+      var a = b.getAttribute("data-action"), v = b.getAttribute("data-value");
+      if (a === "color") { st.color = v; preload(p, v); history.replaceState(null, "", productUrl(p, v)); sync(true); }
+      else if (a === "view") { st.view = v; sync(true); }
+      else if (a === "size") { st.size = v; $("[data-error]", el).hidden = true; sync(false); }
+      else if (a === "qty-inc") { st.qty = Math.min(99, st.qty + 1); sync(false); }
+      else if (a === "qty-dec") { st.qty = Math.max(1, st.qty - 1); sync(false); }
+      else if (a === "add") {
+        if (!st.size) { $("[data-error]", el).hidden = false; $('[data-action="size"]', el).focus(); return; }
+        addToCart(p.id, st.color, st.size, st.qty); openCart(b);
+      }
+    });
+    sync(false);
+    colorKeys(p).forEach(function (k) { if (k !== st.color) return; preload(p, k); });
+  }
 
   /* ---------- Search ---------- */
-  var searchBar = $("#fm-search"), searchInput = $("#fm-search-input"), searchBtn = $("#fm-search-open");
-  function openSearch() { searchBar.hidden = false; searchBtn.setAttribute("aria-expanded", "true"); setMenu(false); searchInput.focus(); }
-  function closeSearch() { searchBar.hidden = true; searchBtn.setAttribute("aria-expanded", "false"); if (searchQuery) { clearSearch(); renderCatalog(); } searchBtn.focus(); }
-  searchBtn.addEventListener("click", function () { searchBar.hidden ? openSearch() : closeSearch(); });
+  function searchPage(q) {
+    var words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    var list = !words.length ? [] : PRODUCTS.filter(function (p) {
+      var hay = [p.name, p.description].concat(p.categories, colorKeys(p).map(function (k) { return colorInfo(k).label; })).join(" ").toLowerCase();
+      return words.every(function (w) { return hay.indexOf(w) !== -1; });
+    });
+    setTitle("Search");
+    view.innerHTML = '<div class="fm-page"><div class="fm-wrap">' + crumbs([["Shop", "/"], ["Search", "/search"]]) +
+      '<div class="fm-page__head"><h1 class="fm-page__title fm-display">' + (q.trim() ? 'Results for "' + esc(q.trim()) + '"' : "Search") + "</h1></div>" +
+      (list.length ? gridHTML(list) : '<div class="fm-note"><p>' + (q.trim() ? "Nothing matches that search." : "Type what you're looking for above.") +
+        '</p><a class="fm-btn fm-btn--gold" href="/" data-link>Back to the shop</a></div>') + "</div></div>";
+  }
+  function notFoundPage() {
+    setTitle("Not found");
+    view.innerHTML = '<div class="fm-page"><div class="fm-wrap"><div class="fm-page__head"><h1 class="fm-page__title fm-display">Page not found</h1></div>' +
+      '<div class="fm-note"><p>That page isn\'t in the shop.</p><a class="fm-btn fm-btn--gold" href="/" data-link>Back to the shop</a></div></div></div>';
+  }
+
+  var searchForm = $("#fm-search"), searchInput = $("#fm-search-input"), searchBtn = $("#fm-search-open");
+  function openSearch() { searchForm.hidden = false; searchBtn.setAttribute("aria-expanded", "true"); setMenu(false); searchInput.focus(); }
+  function closeSearch() { searchForm.hidden = true; searchBtn.setAttribute("aria-expanded", "false"); searchBtn.focus(); }
+  searchBtn.addEventListener("click", function () { searchForm.hidden ? openSearch() : closeSearch(); });
   $("#fm-search-close").addEventListener("click", closeSearch);
-  searchInput.addEventListener("input", function () { searchQuery = searchInput.value; renderCatalog(); });
-  searchInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") { e.preventDefault(); var first = $("#fm-catalog .fm-collection, #fm-catalog .fm-search-empty"); if (first) first.scrollIntoView(scrollOpts()); }
-  });
-
-  /* ---------- Overlays ---------- */
-  function setLock() {
-    var open = !$("#fm-modal").hidden || $("#fm-drawer").classList.contains("is-open");
-    document.documentElement.classList.toggle("fm-lock", open);
-  }
-  function trapTab(container, e) {
-    var f = $$('button:not([disabled]),a[href],input,[tabindex]:not([tabindex="-1"])', container).filter(function (x) { return x.offsetParent !== null; });
-    if (!f.length) return;
-    var first = f[0], last = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  }
-
-  /* ---------- Product detail modal ---------- */
-  var modal = $("#fm-modal"), modalBody = $("#fm-modal-body"), modalState = null, modalReturn = null;
-  function openModal(id, trigger) {
-    var p = byId(id), cs = cardState[id];
-    modalState = { id: id, color: cs.color, view: cs.view, size: cs.size, qty: 1 };
-    modalReturn = trigger || document.activeElement;
-    modalBody.innerHTML =
-      '<div class="fm-pd"><div class="fm-pd__media"><div class="fm-stage" data-stage="large"></div>' + viewThumbs(modalState) + "</div>" +
-      '<div class="fm-pd__info"><h2 class="fm-pd__name" id="fm-modal-title">' + esc(p.name) + "</h2>" +
-      '<p class="fm-pd__price">' + money(p.price) + "</p>" +
-      (p.description ? '<p class="fm-pd__desc">' + esc(p.description) + "</p>" : "") +
-      '<p class="fm-pd__label">Color</p>' + colorButtons(p, modalState) +
-      '<p class="fm-pd__label">Size</p>' + sizeButtons(p, modalState) +
-      '<p class="fm-pd__label">Quantity</p><div class="fm-qty">' +
-        '<button type="button" data-action="qty-dec" aria-label="Decrease quantity">&minus;</button><span data-qty aria-live="polite">1</span>' +
-        '<button type="button" data-action="qty-inc" aria-label="Increase quantity">+</button></div>' +
-      '<div class="fm-product__buy"><button type="button" class="fm-btn fm-btn--gold fm-btn--block" data-action="add">Add to cart</button>' +
-      '<p class="fm-pd__ship">Shipping calculated at checkout.</p></div></div></div>';
-    sync(modalBody, p, modalState, false);
-    modal.hidden = false; setLock();
-    $(".fm-modal__close", modal).focus();
-  }
-  function closeModal(restoreFocus) {
-    if (modal.hidden) return;
-    var p = byId(modalState.id), cs = cardState[p.id];
-    cs.color = modalState.color; cs.view = modalState.view; if (modalState.size) cs.size = modalState.size;
-    syncProduct(p, null);
-    modal.hidden = true; modalBody.innerHTML = ""; setLock();
-    if (restoreFocus !== false && modalReturn && document.contains(modalReturn)) modalReturn.focus();
-  }
-  modal.addEventListener("click", function (e) {
-    if (e.target.closest("[data-modal-close]")) { closeModal(); return; }
-    var btn = e.target.closest("[data-action]"); if (!btn || !modalState) return;
-    var p = byId(modalState.id), action = btn.getAttribute("data-action");
-    if (handle(action, btn.getAttribute("data-value"), modalBody, p, modalState) && action === "add") {
-      var back = modalReturn; closeModal(false); openCart(back);
-    }
+  searchForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    go("/search?q=" + encodeURIComponent(searchInput.value.trim()));
   });
 
   /* ---------- Cart ---------- */
@@ -354,24 +334,25 @@
     }
     list.innerHTML = cart.map(function (i) {
       var p = byId(i.id);
-      return '<li class="fm-line" data-key="' + esc(i.key) + '"><div class="fm-line__img">' + media(p, i.color, "front", "line") + "</div>" +
-        '<div><p class="fm-line__name">' + esc(p.name) + '</p><p class="fm-line__meta">' + esc(colorInfo(i.color).label) + ", size " + esc(i.size) + "</p>" +
+      return '<li class="fm-line" data-key="' + esc(i.key) + '"><div class="fm-line__img">' + img(p, i.color, "front", { decorative: true }) + "</div>" +
+        '<div><p class="fm-line__name"><a href="' + productUrl(p, i.color) + '" data-link>' + esc(p.name) + '</a></p><p class="fm-line__meta">' + esc(colorInfo(i.color).label) + ", size " + esc(i.size) + "</p>" +
         '<div class="fm-qty"><button type="button" data-cart="dec" aria-label="Decrease quantity"' + (i.qty <= 1 ? " disabled" : "") + ">&minus;</button>" +
         "<span>" + i.qty + '</span><button type="button" data-cart="inc" aria-label="Increase quantity">+</button></div></div>' +
         '<div class="fm-line__end"><span class="fm-line__price">' + money(p.price * i.qty) + "</span>" +
         '<button type="button" class="fm-link" data-cart="remove">Remove</button></div></li>';
     }).join("");
   }
+  function setLock() { document.documentElement.classList.toggle("fm-lock", drawer.classList.contains("is-open")); }
   function openCart(trigger) {
     cartReturn = trigger || document.activeElement;
     setMenu(false);
     drawer.classList.add("is-open"); drawer.setAttribute("aria-hidden", "false"); setLock();
     setTimeout(function () { $("#fm-cart-close").focus(); }, 60);
   }
-  function closeCart() {
+  function closeCart(restore) {
     if (!drawer.classList.contains("is-open")) return;
     drawer.classList.remove("is-open"); drawer.setAttribute("aria-hidden", "true"); setLock();
-    if (cartReturn && document.contains(cartReturn)) cartReturn.focus();
+    if (restore !== false && cartReturn && document.contains(cartReturn)) cartReturn.focus();
   }
   $("#fm-cart-open").addEventListener("click", function (e) { openCart(e.currentTarget); });
   $("#fm-fab").addEventListener("click", function (e) { openCart(e.currentTarget); });
@@ -393,35 +374,36 @@
     if (!order.items.length) return;
     try { window.dispatchEvent(new CustomEvent("forge-merch:checkout", { detail: order })); } catch (e) {}
     var handled = false;
-    try { handled = forgeMerchCheckout(order) === true; } catch (e) { console.error("[Forge merch] checkout hook failed", e); }
+    try { handled = forgeMerchCheckout(order) === true; } catch (e) { console.error("[Forge shop] checkout hook failed", e); }
     if (!handled) {
       var n = $("#fm-checkout-note");
       n.textContent = "Online checkout isn't connected yet. Your cart is saved on this device.";
       n.hidden = false;
     }
   });
+  window.addEventListener("storage", function (e) { if (e.key === SITE.storageKey) { cart = loadCart(); renderCart(); } });
 
-  /* ---------- Toast ---------- */
   var toastTimer;
   function toast(msg) {
     var t = $("#fm-toast"); t.textContent = msg; t.classList.add("is-on");
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("is-on"); }, 2200);
   }
 
-  /* ---------- Keyboard ---------- */
+  function trapTab(container, e) {
+    var f = $$('button:not([disabled]),a[href],input,[tabindex]:not([tabindex="-1"])', container).filter(function (x) { return x.offsetParent !== null; });
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
-      if (!modal.hidden) closeModal();
-      else if (drawer.classList.contains("is-open")) closeCart();
-      else if (!searchBar.hidden) closeSearch();
+      if (drawer.classList.contains("is-open")) closeCart();
+      else if (!searchForm.hidden) closeSearch();
       else if (nav.classList.contains("is-open")) { setMenu(false); menuBtn.focus(); }
-    } else if (e.key === "Tab") {
-      if (!modal.hidden) trapTab($(".fm-modal__panel"), e);
-      else if (drawer.classList.contains("is-open")) trapTab($(".fm-drawer__panel"), e);
-    }
+    } else if (e.key === "Tab" && drawer.classList.contains("is-open")) trapTab($(".fm-drawer__panel"), e);
   });
 
-  renderNav();
-  renderCatalog();
   renderCart();
+  render(false);
 })();

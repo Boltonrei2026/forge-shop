@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Forge Shop | Forge Learning Academy</title>
 <meta name="description" content="Purpose-driven apparel for a brighter generation, from Forge Learning Academy.">
 <meta name="theme-color" content="#0A1630">
 <meta property="og:title" content="Forge Shop | Forge Learning Academy">
 <meta property="og:description" content="Purpose-driven apparel for a brighter generation.">
-<meta property="og:image" content="images/products/forged-for-more/navy-back.webp">
+<meta property="og:image" content="https://shop.forgelearningacademy.com/images/hero/family-sunset.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/store.css">
+<link rel="stylesheet" href="/css/store.css">
 </head>
 <body>
-
 <div id="forge-merch">
 
   <header class="fm-header" id="fm-header">
@@ -36,58 +36,22 @@
         </button>
       </div>
     </div>
-    <div class="fm-search" id="fm-search" hidden>
+    <nav class="fm-subnav" aria-label="Shop">
+      <div class="fm-wrap fm-subnav__inner" id="fm-subnav"></div>
+    </nav>
+    <form class="fm-search" id="fm-search" role="search" hidden>
       <div class="fm-wrap">
         <label for="fm-search-input" class="fm-sr">Search apparel</label>
-        <input type="search" id="fm-search-input" placeholder="Search apparel" autocomplete="off">
+        <input type="search" id="fm-search-input" placeholder="Search apparel" autocomplete="off" enterkeyhint="search">
+        <button type="submit" class="fm-btn fm-btn--gold fm-search__go">Search</button>
         <button type="button" class="fm-icon-btn" id="fm-search-close" aria-label="Close search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </div>
-    </div>
+    </form>
   </header>
 
-  <main>
-    <section class="fm-hero" aria-labelledby="fm-hero-title">
-      <div class="fm-wrap fm-hero__copy">
-        <div class="fm-hero__lead">
-          <p class="fm-kicker">Forge Shop</p>
-          <h1 class="fm-hero__title fm-display" id="fm-hero-title"><span>Wear what</span><span>you're building.</span></h1>
-        </div>
-        <div class="fm-hero__aside">
-          <p class="fm-hero__sub">Purpose-driven apparel for a brighter generation.</p>
-          <a class="fm-btn fm-btn--gold" href="#fm-shop" data-scroll>Shop the collection</a>
-        </div>
-      </div>
-      <div class="fm-hero__media" id="fm-hero-media"></div>
-    </section>
-
-    <section class="fm-catnav" id="fm-shop" aria-labelledby="fm-catnav-title">
-      <div class="fm-wrap">
-        <h2 class="fm-catnav__title fm-display" id="fm-catnav-title">Shop the collection</h2>
-        <div class="fm-catnav__bar">
-          <nav class="fm-catnav__list" id="fm-catnav-list" aria-label="Collections"></nav>
-          <div class="fm-tracks" role="group" aria-label="Filter designs">
-            <span class="fm-tracks__label">Designs</span>
-            <span id="fm-tracks"></span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div id="fm-catalog"></div>
-
-    <section class="fm-kids" id="fm-kids" aria-labelledby="fm-kids-title">
-      <div class="fm-wrap fm-kids__inner">
-        <p class="fm-kids__words fm-display" aria-hidden="true"><span>Kinder</span><span>Braver</span><span>Smarter</span><span>Stronger</span></p>
-        <div class="fm-kids__side">
-          <h2 class="fm-kids__title fm-display" id="fm-kids-title">The kids' collection</h2>
-          <p>Created to do great things.</p>
-          <div class="fm-kids__btns" id="fm-kids-btns"></div>
-        </div>
-      </div>
-    </section>
-  </main>
+  <main id="fm-view" tabindex="-1"></main>
 
   <footer class="fm-footer">
     <div class="fm-wrap fm-footer__inner">
@@ -105,18 +69,6 @@
     <span class="fm-cart-count" data-cart-count hidden>0</span>
   </button>
 
-  <!-- Product detail modal -->
-  <div class="fm-modal" id="fm-modal" hidden>
-    <div class="fm-modal__backdrop" data-modal-close></div>
-    <div class="fm-modal__panel fm-light" role="dialog" aria-modal="true" aria-labelledby="fm-modal-title">
-      <button type="button" class="fm-icon-btn fm-modal__close" data-modal-close aria-label="Close product details">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-      </button>
-      <div id="fm-modal-body"></div>
-    </div>
-  </div>
-
-  <!-- Cart drawer -->
   <div class="fm-drawer" id="fm-drawer" aria-hidden="true">
     <div class="fm-drawer__backdrop" data-cart-close></div>
     <aside class="fm-drawer__panel fm-light" role="dialog" aria-modal="true" aria-labelledby="fm-cart-title">
@@ -139,7 +91,7 @@
   <div class="fm-toast" id="fm-toast" role="status" aria-live="polite"></div>
 </div>
 
-<script src="js/products.js"></script>
-<script src="js/store.js"></script>
+<script src="/js/products.js"></script>
+<script src="/js/store.js"></script>
 </body>
 </html>
