@@ -17,11 +17,10 @@ var SITE = {
   tryForgeUrl: "#",             // >>> PASTE: your free-trial link
 
   nav: [                        // >>> PASTE: your real page URLs
-    { label: "Home",       url: "https://forgelearningacademy.com" },
-    { label: "Curriculum", url: "#" },
+    { label: "Home",       url: "/", current: true },
+    { label: "Curriculum", url: "https://forgelearningacademy.com" },
     { label: "Free Trial", url: "#" },
-    { label: "Resources",  url: "#" },
-    { label: "Shop",       url: "#fm-shop", current: true }
+    { label: "Resources",  url: "#" }
   ],
 
   /* Collections, in page order. A collection gets its own section as soon
