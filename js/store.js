@@ -20,6 +20,8 @@
   var colorInfo = function (k) { return COLORS[k] || { label: k, hex: "#8A94A8" }; };
   var colorKeys = function (p) { return Object.keys(p.colors); };
   var viewLabel = function (v) { return v === "back" ? "Back" : "Front"; };
+  var firstView = function (p) { return p.preview === "back" ? "back" : "front"; };
+  var otherView = function (p) { return firstView(p) === "back" ? "front" : "back"; };
   var collectionKeys = function () { return Object.keys(SITE.collections); };
   var productsIn = function (key) { return PRODUCTS.filter(function (p) { return p.categories.indexOf(key) !== -1; }); };
   var collectionOf = function (p) { return collectionKeys().find(function (k) { return p.categories.indexOf(k) !== -1; }); };
@@ -122,7 +124,7 @@
     var c = cardColor[p.id] || colorKeys(p)[0];
     return '<article class="fm-card" data-id="' + esc(p.id) + '">' +
       '<a class="fm-card__media" href="' + productUrl(p, c) + '" data-link aria-label="' + esc(p.name) + '">' +
-        img(p, c, "front", { cls: "is-front", decorative: true }) + img(p, c, "back", { cls: "is-back", decorative: true }) + "</a>" +
+        img(p, c, firstView(p), { cls: "is-front", decorative: true }) + img(p, c, otherView(p), { cls: "is-back", decorative: true }) + "</a>" +
       '<div class="fm-card__meta"><h3 class="fm-card__name"><a href="' + productUrl(p, c) + '" data-link>' + esc(p.name) + "</a></h3>" +
         '<span class="fm-card__price">' + money(p.price) + "</span></div>" +
       '<div class="fm-card__colors"><div class="fm-dots" role="group" aria-label="Color">' + colorKeys(p).map(function (k) {
@@ -148,7 +150,7 @@
     var tiles = collectionKeys().map(function (k) {
       var c = SITE.collections[k], list = productsIn(k), first = list[0];
       var pic = c.image ? '<img src="' + esc(c.image) + '" alt="" loading="lazy">'
-        : first ? img(first, colorKeys(first)[0], "front", { decorative: true }) : "";
+        : first ? img(first, colorKeys(first)[0], firstView(first), { decorative: true }) : "";
       return '<a class="fm-tile" href="/' + esc(k) + '" data-link>' +
         (pic ? '<div class="fm-tile__img">' + pic + "</div>" : '<div class="fm-tile__img fm-tile__img--empty">Not in the shop yet</div>') +
         '<div class="fm-tile__label"><span class="fm-tile__name">' + esc(c.label) + '</span><span class="fm-tile__count">' +
@@ -208,13 +210,13 @@
   /* ---------- Product ---------- */
   function productPage(p, colorParam) {
     var key = collectionOf(p), c = key ? SITE.collections[key] : null;
-    var st = { color: p.colors[colorParam] ? colorParam : colorKeys(p)[0], view: "front", size: null, qty: 1 };
+    var st = { color: p.colors[colorParam] ? colorParam : colorKeys(p)[0], view: firstView(p), size: null, qty: 1 };
     setTitle(p.name);
     var related = key ? productsIn(key).filter(function (x) { return x.id !== p.id; }) : [];
     view.innerHTML = '<div class="fm-page"><div class="fm-wrap">' +
       crumbs([["Shop", "/"]].concat(c ? [[c.label, "/" + key]] : [], [[p.name, productUrl(p)]])) +
       '<div class="fm-pdp" data-pdp><div class="fm-pdp__media"><div class="fm-pdp__stage" data-stage></div>' +
-        '<div class="fm-thumbs" role="group" aria-label="View">' + ["front", "back"].map(function (v) {
+        '<div class="fm-thumbs" role="group" aria-label="View">' + [firstView(p), otherView(p)].map(function (v) {
           return '<button type="button" class="fm-thumb" data-action="view" data-value="' + v + '"><span class="fm-thumb__img" data-thumb="' + v + '"></span>' + viewLabel(v) + "</button>";
         }).join("") + "</div></div>" +
       '<div class="fm-pdp__info"><h1 class="fm-pdp__name">' + esc(p.name) + '</h1><p class="fm-pdp__price">' + money(p.price) + "</p>" +

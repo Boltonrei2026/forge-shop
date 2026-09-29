@@ -31,7 +31,7 @@ var SITE = {
     men:   { label: "Men",   title: "Men's collection",   intro: "Built for the ones who lead at home.", banner: "" },
     women: { label: "Women", title: "Women's collection", intro: "For the women building something that lasts.", banner: "" },
     boys:  { label: "Boys",  title: "Boys' collection",   intro: "Made for the boys learning to lead.", banner: "" },
-    girls: { label: "Girls", title: "Girls' collection",  intro: "", banner: "" }
+    girls: { label: "Girls", title: "Girls' collection",  intro: "For the girls growing kinder, braver, smarter, and stronger.", banner: "" }
   },
 
   /* Large editorial lines placed after each collection, in order. */
@@ -66,7 +66,10 @@ var COLORS = {
   natural:    { label: "Natural",      hex: "#F8ECDC" },
   sport_grey: { label: "Sport Grey",   hex: "#CECECE" },
   white:      { label: "White",        hex: "#FFFFFF" },
-  royal:      { label: "Royal",        hex: "#386CC2" }
+  royal:      { label: "Royal",        hex: "#386CC2" },
+  azalea:     { label: "Azalea",       hex: "#F28BAC" },
+  light_pink: { label: "Light Pink",   hex: "#F2BEC2" },
+  gold:       { label: "Gold",         hex: "#F29F30" }
 };
 
 /* PRODUCTS: one entry = one product. Each color has its own front + back image.
@@ -150,6 +153,7 @@ var PRODUCTS = [
   },
   {
     id: "forge-knight",
+    preview: "back",                           // opens on the back view
     name: "Forge Knight",
     price: 25,                                  // CONFIRM PRICE
     categories: ["boys", "secular"],
@@ -161,6 +165,58 @@ var PRODUCTS = [
       black:      { front: "images/products/forge-knight/black-front.webp", back: "images/products/forge-knight/black-back.webp" },
       charcoal:   { front: "images/products/forge-knight/charcoal-front.webp", back: "images/products/forge-knight/charcoal-back.webp" },
       bright_red: { front: "images/products/forge-knight/bright_red-front.webp", back: "images/products/forge-knight/bright_red-back.webp" }
+    }
+  },
+  {
+    id: "forge-princess",
+    name: "Forge Princess",
+    price: 25,                                  // CONFIRM PRICE
+    categories: ["girls", "secular"],
+    description: "The Forge princess knight with FORGE LEARNING ACADEMY on the front.",
+    sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
+    colors: {
+      azalea:     { front: "images/products/forge-princess/azalea-front.webp", back: "images/products/forge-princess/azalea-back.webp" },
+      light_pink: { front: "images/products/forge-princess/light_pink-front.webp", back: "images/products/forge-princess/light_pink-back.webp" },
+      natural:    { front: "images/products/forge-princess/natural-front.webp", back: "images/products/forge-princess/natural-back.webp" },
+      white:      { front: "images/products/forge-princess/white-front.webp", back: "images/products/forge-princess/white-back.webp" },
+      sport_grey: { front: "images/products/forge-princess/sport_grey-front.webp", back: "images/products/forge-princess/sport_grey-back.webp" },
+      charcoal:   { front: "images/products/forge-princess/charcoal-front.webp", back: "images/products/forge-princess/charcoal-back.webp" },
+      black:      { front: "images/products/forge-princess/black-front.webp", back: "images/products/forge-princess/black-back.webp" }
+    }
+  },
+  {
+    id: "created-to-do-great-things",
+    preview: "back",                           // opens on the back view
+    name: "Created to Do Great Things",
+    price: 25,                                  // CONFIRM PRICE
+    categories: ["girls", "secular"],
+    description: "CREATED TO DO GREAT THINGS script with a crown on the front. The Forge princess knight on the back.",
+    sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
+    colors: {
+      light_pink: { front: "images/products/created-to-do-great-things/light_pink-front.webp", back: "images/products/created-to-do-great-things/light_pink-back.webp" },
+      azalea:     { front: "images/products/created-to-do-great-things/azalea-front.webp", back: "images/products/created-to-do-great-things/azalea-back.webp" },
+      natural:    { front: "images/products/created-to-do-great-things/natural-front.webp", back: "images/products/created-to-do-great-things/natural-back.webp" },
+      sport_grey: { front: "images/products/created-to-do-great-things/sport_grey-front.webp", back: "images/products/created-to-do-great-things/sport_grey-back.webp" },
+      charcoal:   { front: "images/products/created-to-do-great-things/charcoal-front.webp", back: "images/products/created-to-do-great-things/charcoal-back.webp" },
+      black:      { front: "images/products/created-to-do-great-things/black-front.webp", back: "images/products/created-to-do-great-things/black-back.webp" }
+    }
+  },
+  {
+    id: "kinder-braver-smarter-stronger",
+    preview: "back",                           // opens on the back view
+    name: "Kinder Braver Smarter Stronger",
+    price: 25,                                  // CONFIRM PRICE
+    categories: ["girls", "secular"],
+    description: "Small Forge princess knight on the front. Rainbow and crown with KINDER BRAVER SMARTER STRONGER on the back.",
+    sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
+    colors: {
+      navy:       { front: "images/products/kinder-braver-smarter-stronger/navy-front.webp", back: "images/products/kinder-braver-smarter-stronger/navy-back.webp" },
+      azalea:     { front: "images/products/kinder-braver-smarter-stronger/azalea-front.webp", back: "images/products/kinder-braver-smarter-stronger/azalea-back.webp" },
+      light_pink: { front: "images/products/kinder-braver-smarter-stronger/light_pink-front.webp", back: "images/products/kinder-braver-smarter-stronger/light_pink-back.webp" },
+      gold:       { front: "images/products/kinder-braver-smarter-stronger/gold-front.webp", back: "images/products/kinder-braver-smarter-stronger/gold-back.webp" },
+      natural:    { front: "images/products/kinder-braver-smarter-stronger/natural-front.webp", back: "images/products/kinder-braver-smarter-stronger/natural-back.webp" },
+      charcoal:   { front: "images/products/kinder-braver-smarter-stronger/charcoal-front.webp", back: "images/products/kinder-braver-smarter-stronger/charcoal-back.webp" },
+      black:      { front: "images/products/kinder-braver-smarter-stronger/black-front.webp", back: "images/products/kinder-braver-smarter-stronger/black-back.webp" }
     }
   }
 ];
