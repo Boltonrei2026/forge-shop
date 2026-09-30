@@ -52,6 +52,7 @@ export async function onRequestPost({ request, env }) {
     } } },
     automatic_tax: tax ? { enabled: "true" } : undefined,
     phone_number_collection: { enabled: "true" },
+    custom_text: { submit: { message: "Every shirt is made to order. Orders can't be canceled once printing begins. Shipping and returns: " + SITE_URL(env, request) + "/help" } },
     metadata: { source: "forge-shop" },
     payment_intent_data: { metadata: { source: "forge-shop" } },
     success_url: SITE_URL(env, request) + "/order/success?session_id={CHECKOUT_SESSION_ID}",

@@ -20,7 +20,7 @@ var SITE = {
     { label: "Home",       url: "/", current: true },
     { label: "Curriculum", url: "https://forgelearningacademy.com" },
     { label: "Free Trial", url: "https://my.forgelearningacademy.com/onboarding-role" },
-    { label: "Resources",  url: "#" }
+    { label: "Help",       url: "/help" }
   ],
 
   /* Collections, in page order. A collection gets its own section as soon

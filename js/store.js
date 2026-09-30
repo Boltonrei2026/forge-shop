@@ -52,7 +52,8 @@
   }
 
   /* ---------- Header, nav, footer ---------- */
-  var isShopLink = function (url) { return url.charAt(0) === "#" || url === "/"; };
+  var isShopLink = function (url) { return url.charAt(0) === "#" || url.charAt(0) === "/"; };
+  var shopHref = function (url) { return url.charAt(0) === "/" ? esc(url) : "/"; };
   function logoHTML() {
     return SITE.logoUrl ? '<img src="' + esc(SITE.logoUrl) + '" alt="' + esc(SITE.logoAlt) + '">' : '<span class="fm-logo__text">Forge Learning Academy</span>';
   }
@@ -62,11 +63,11 @@
   $("#fm-try").href = SITE.tryForgeUrl;
   $("#fm-nav-list").innerHTML = SITE.nav.map(function (l) {
     var shop = isShopLink(l.url);
-    return '<li><a href="' + (shop ? "/" : esc(l.url)) + '"' + (shop ? " data-link" : "") + (l.current ? ' aria-current="page"' : "") + ">" + esc(l.label) + "</a></li>";
+    return '<li><a href="' + (shop ? shopHref(l.url) : esc(l.url)) + '"' + (shop ? " data-link" : "") + (l.current ? ' aria-current="page"' : "") + ">" + esc(l.label) + "</a></li>";
   }).join("") + '<li class="fm-nav__cta"><a class="fm-btn fm-btn--gold" href="' + esc(SITE.tryForgeUrl) + '">Try Forge Free</a></li>';
   $("#fm-footer-links").innerHTML = SITE.nav.map(function (l) {
     var shop = isShopLink(l.url);
-    return '<a href="' + (shop ? "/" : esc(l.url)) + '"' + (shop ? " data-link" : "") + ">" + esc(l.label) + "</a>";
+    return '<a href="' + (shop ? shopHref(l.url) : esc(l.url)) + '"' + (shop ? " data-link" : "") + ">" + esc(l.label) + "</a>";
   }).join("");
   $("#fm-year").textContent = new Date().getFullYear();
 
@@ -100,6 +101,7 @@
       var p = byId(decodeURIComponent(m[1])); renderSubnav(collectionOf(p)); productPage(p, q.get("color"));
     }
     else if ((m = path.match(/^\/([a-z0-9-]+)$/)) && SITE.collections[m[1]]) { renderSubnav(m[1]); collectionPage(m[1], q.get("designs") || "all"); }
+    else if (path === "/help") { renderSubnav(""); helpPage(); }
     else if (path === "/order/success") { renderSubnav(""); successPage(); }
     else if (path === "/search") { renderSubnav(""); searchPage(q.get("q") || ""); }
     else { renderSubnav(""); notFoundPage(); }
@@ -237,7 +239,7 @@
         '<p class="fm-pdp__label">Quantity</p><div class="fm-qty"><button type="button" data-action="qty-dec" aria-label="Decrease quantity">&minus;</button>' +
         '<span data-qty aria-live="polite">1</span><button type="button" data-action="qty-inc" aria-label="Increase quantity">+</button></div>' +
         '<div class="fm-pdp__buy"><button type="button" class="fm-btn fm-btn--gold fm-btn--block" data-action="add">Add to cart</button>' +
-        '<p class="fm-pdp__ship">' + (typeof SHIPPING !== "undefined" ? "Free standard shipping on orders over " + money(SHIPPING.freeOver) + ". Printed to order." : "Shipping calculated at checkout.") + "</p></div></div></div>" +
+        '<p class="fm-pdp__ship">' + (typeof SHIPPING !== "undefined" ? "Free standard shipping on orders over " + money(SHIPPING.freeOver) + '. Printed to order. <a href="/help" data-link>Shipping &amp; returns</a>' : "Shipping calculated at checkout.") + "</p></div></div></div>" +
       (related.length ? '<section class="fm-related" aria-labelledby="fm-rel-title"><h2 class="fm-section-title fm-display" id="fm-rel-title">More from the ' +
         esc(c.label.toLowerCase()) + "'s collection</h2>" + gridHTML(related) + "</section>" : "") +
       "</div></div>";
@@ -289,6 +291,42 @@
       '<div class="fm-page__head"><h1 class="fm-page__title fm-display">' + (q.trim() ? 'Results for "' + esc(q.trim()) + '"' : "Search") + "</h1></div>" +
       (list.length ? gridHTML(list) : '<div class="fm-note"><p>' + (q.trim() ? "Nothing matches that search." : "Type what you're looking for above.") +
         '</p><a class="fm-btn fm-btn--gold" href="/" data-link>Back to the shop</a></div>') + "</div></div>";
+  }
+  function helpPage() {
+    setTitle("Help");
+    var email = SITE.supportEmail || "learn@forgelearningacademy.com";
+    var free = typeof SHIPPING !== "undefined" ? SHIPPING : { freeOver: 70, flatRate: 12 };
+    var mail = '<a href="mailto:' + esc(email) + '">' + esc(email) + "</a>";
+    var sec = function (title, items) {
+      return '<section class="fm-help__sec"><h2 class="fm-section-title fm-display">' + title + "</h2><ul>" +
+        items.map(function (i) { return "<li>" + i + "</li>"; }).join("") + "</ul></section>";
+    };
+    view.innerHTML = '<div class="fm-page"><div class="fm-wrap fm-help">' + crumbs([["Shop", "/"], ["Help", "/help"]]) +
+      '<div class="fm-page__head"><div><h1 class="fm-page__title fm-display">Help</h1><p class="fm-page__intro">Shipping, returns, and answers to common questions.</p></div></div>' +
+      sec("Orders and cancellations", [
+        "Every shirt is printed just for you after you order.",
+        "Need to change or cancel an order? Email us right away at " + mail + ". If printing hasn't started, we'll change or cancel it for you.",
+        "Once an order is in production, it can't be canceled or changed."
+      ]) +
+      sec("Shipping", [
+        "We ship to US addresses only.",
+        "Free standard shipping on orders over " + money(free.freeOver) + ". Otherwise " + money(free.flatRate) + " flat.",
+        "Each shirt is printed to order, which usually takes a few business days before it ships.",
+        "Kids' and adult shirts are printed at different facilities, so they may arrive in separate packages.",
+        "Please double-check your address at checkout. If a package comes back because the address was incorrect or it went unclaimed, we can reship it for a shipping fee."
+      ]) +
+      sec("Returns and exchanges", [
+        "Because every item is made to order, we don't accept returns or exchanges for size, color, or a change of mind.",
+        "If your item arrives misprinted, damaged, defective, or you received the wrong item, we'll replace it free. Email us within 30 days of delivery with the email you ordered with and clear photos of the issue.",
+        "If your package seems lost, email us within 30 days of the estimated delivery date and we'll look into it.",
+        "If tracking shows your package was delivered but you can't find it, please check with neighbors and your local post office first."
+      ]) +
+      sec("Sizing", [
+        "Kids' shirts come in youth sizes. Adult shirts come in adult sizes S to 2XL.",
+        "Not sure which size to pick? Email us before you order and we'll help you choose."
+      ]) +
+      sec("Contact", ["Email " + mail + " with the email you ordered with, and we'll get back to you."]) +
+      '<a class="fm-btn fm-btn--gold" href="/" data-link>Back to the shop</a></div></div>';
   }
   function successPage() {
     setTitle("Order confirmed");
