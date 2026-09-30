@@ -14,12 +14,12 @@ var SITE = {
   heroImageIsProduct: false,    // true only when the hero is a shirt mockup on white
   heroImageAlt: "A family sitting on a rock ledge at sunset, wearing Forge Learning Academy shirts",
 
-  tryForgeUrl: "#",             // >>> PASTE: your free-trial link
+  tryForgeUrl: "https://my.forgelearningacademy.com/try",             // >>> PASTE: your free-trial link
 
   nav: [                        // >>> PASTE: your real page URLs
     { label: "Home",       url: "/", current: true },
     { label: "Curriculum", url: "https://forgelearningacademy.com" },
-    { label: "Free Trial", url: "#" },
+    { label: "Free Trial", url: "https://my.forgelearningacademy.com/onboarding-role" },
     { label: "Resources",  url: "#" }
   ],
 
