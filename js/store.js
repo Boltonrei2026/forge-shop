@@ -96,6 +96,7 @@
       var p = byId(decodeURIComponent(m[1])); renderSubnav(collectionOf(p)); productPage(p, q.get("color"));
     }
     else if ((m = path.match(/^\/([a-z0-9-]+)$/)) && SITE.collections[m[1]]) { renderSubnav(m[1]); collectionPage(m[1], q.get("designs") || "all"); }
+    else if (path === "/order/success") { renderSubnav(""); successPage(); }
     else if (path === "/search") { renderSubnav(""); searchPage(q.get("q") || ""); }
     else { renderSubnav(""); notFoundPage(); }
     if (scrollTop) { window.scrollTo(0, 0); view.focus({ preventScroll: true }); }
@@ -232,7 +233,7 @@
         '<p class="fm-pdp__label">Quantity</p><div class="fm-qty"><button type="button" data-action="qty-dec" aria-label="Decrease quantity">&minus;</button>' +
         '<span data-qty aria-live="polite">1</span><button type="button" data-action="qty-inc" aria-label="Increase quantity">+</button></div>' +
         '<div class="fm-pdp__buy"><button type="button" class="fm-btn fm-btn--gold fm-btn--block" data-action="add">Add to cart</button>' +
-        '<p class="fm-pdp__ship">Shipping calculated at checkout.</p></div></div></div>' +
+        '<p class="fm-pdp__ship">' + (typeof SHIPPING !== "undefined" ? "Free standard shipping on orders over " + money(SHIPPING.freeOver) + ". Printed to order." : "Shipping calculated at checkout.") + "</p></div></div></div>" +
       (related.length ? '<section class="fm-related" aria-labelledby="fm-rel-title"><h2 class="fm-section-title fm-display" id="fm-rel-title">More from the ' +
         esc(c.label.toLowerCase()) + "'s collection</h2>" + gridHTML(related) + "</section>" : "") +
       "</div></div>";
@@ -279,6 +280,14 @@
       '<div class="fm-page__head"><h1 class="fm-page__title fm-display">' + (q.trim() ? 'Results for "' + esc(q.trim()) + '"' : "Search") + "</h1></div>" +
       (list.length ? gridHTML(list) : '<div class="fm-note"><p>' + (q.trim() ? "Nothing matches that search." : "Type what you're looking for above.") +
         '</p><a class="fm-btn fm-btn--gold" href="/" data-link>Back to the shop</a></div>') + "</div></div>";
+  }
+  function successPage() {
+    setTitle("Order confirmed");
+    cart = []; saveCart(); renderCart();
+    view.innerHTML = '<div class="fm-page"><div class="fm-wrap"><div class="fm-page__head"><div><p class="fm-kicker">Order confirmed</p>' +
+      '<h1 class="fm-page__title fm-display">Thank you.</h1><p class="fm-page__intro">Your payment went through and a receipt is on its way to your email. ' +
+      "Every shirt is printed to order, so please allow extra time. Kids' and adult shirts ship in separate packages.</p></div></div>" +
+      '<a class="fm-btn fm-btn--gold" href="/" data-link>Keep shopping</a></div></div>';
   }
   function notFoundPage() {
     setTitle("Not found");
@@ -327,6 +336,12 @@
     $$("[data-cart-count]").forEach(function (b) { b.textContent = count; b.hidden = count === 0; });
     $("#fm-cart-open").setAttribute("aria-label", "Open cart, " + count + (count === 1 ? " item" : " items"));
     $("#fm-subtotal").textContent = money(order.subtotal);
+    if (typeof SHIPPING !== "undefined") {
+      var left = SHIPPING.freeOver - order.subtotal;
+      $("#fm-ship-note").textContent = (left > 0
+        ? "Add " + money(left) + " more for free shipping. Otherwise " + money(SHIPPING.flatRate) + " flat."
+        : "You've got free standard shipping.") + " Tax calculated at checkout.";
+    }
     $("#fm-checkout").disabled = count === 0;
     if (count === 0) $("#fm-checkout-note").hidden = true;
     var list = $("#fm-cart-items");
@@ -372,16 +387,21 @@
     (again && !again.disabled ? again : $("#fm-cart-close")).focus();
   });
   $("#fm-checkout").addEventListener("click", function () {
-    var order = buildOrder();
+    var order = buildOrder(), btn = $("#fm-checkout"), n = $("#fm-checkout-note");
     if (!order.items.length) return;
     try { window.dispatchEvent(new CustomEvent("forge-merch:checkout", { detail: order })); } catch (e) {}
-    var handled = false;
-    try { handled = forgeMerchCheckout(order) === true; } catch (e) { console.error("[Forge shop] checkout hook failed", e); }
-    if (!handled) {
-      var n = $("#fm-checkout-note");
-      n.textContent = "Online checkout isn't connected yet. Your cart is saved on this device.";
-      n.hidden = false;
-    }
+    btn.disabled = true; btn.textContent = "Opening secure checkout..."; n.hidden = true;
+    fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: cart.map(function (i) { return { id: i.id, color: i.color, size: i.size, qty: i.qty }; }) }) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && res.d.url) { window.location.href = res.d.url; return; }
+        throw new Error(res.d.error || "Checkout failed");
+      })
+      .catch(function (e) {
+        n.textContent = (e && e.message && e.message !== "Failed to fetch") ? e.message : "We couldn't reach checkout. Please try again.";
+        n.hidden = false; btn.disabled = false; btn.textContent = "Checkout";
+      });
   });
   window.addEventListener("storage", function (e) { if (e.key === SITE.storageKey) { cart = loadCart(); renderCart(); } });
 

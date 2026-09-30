@@ -146,7 +146,6 @@ var PRODUCTS = [
       bright_red: { front: "images/products/learn-build-lead/bright_red-front.webp", back: "images/products/learn-build-lead/bright_red-back.webp" },
       natural:    { front: "images/products/learn-build-lead/natural-front.webp", back: "images/products/learn-build-lead/natural-back.webp" },
       sport_grey: { front: "images/products/learn-build-lead/sport_grey-front.webp", back: "images/products/learn-build-lead/sport_grey-back.webp" },
-      charcoal:   { front: "images/products/learn-build-lead/charcoal-front.webp", back: "images/products/learn-build-lead/charcoal-back.webp" },
       white:      { front: "images/products/learn-build-lead/white-front.webp", back: "images/products/learn-build-lead/white-back.webp" }
     }
   },
@@ -162,7 +161,6 @@ var PRODUCTS = [
       navy:       { front: "images/products/forge-knight/navy-front.webp", back: "images/products/forge-knight/navy-back.webp" },
       royal:      { front: "images/products/forge-knight/royal-front.webp", back: "images/products/forge-knight/royal-back.webp" },
       black:      { front: "images/products/forge-knight/black-front.webp", back: "images/products/forge-knight/black-back.webp" },
-      charcoal:   { front: "images/products/forge-knight/charcoal-front.webp", back: "images/products/forge-knight/charcoal-back.webp" },
       bright_red: { front: "images/products/forge-knight/bright_red-front.webp", back: "images/products/forge-knight/bright_red-back.webp" }
     }
   },
@@ -179,7 +177,6 @@ var PRODUCTS = [
       natural:    { front: "images/products/forge-princess/natural-front.webp", back: "images/products/forge-princess/natural-back.webp" },
       white:      { front: "images/products/forge-princess/white-front.webp", back: "images/products/forge-princess/white-back.webp" },
       sport_grey: { front: "images/products/forge-princess/sport_grey-front.webp", back: "images/products/forge-princess/sport_grey-back.webp" },
-      charcoal:   { front: "images/products/forge-princess/charcoal-front.webp", back: "images/products/forge-princess/charcoal-back.webp" },
       black:      { front: "images/products/forge-princess/black-front.webp", back: "images/products/forge-princess/black-back.webp" }
     }
   },
@@ -196,7 +193,6 @@ var PRODUCTS = [
       azalea:     { front: "images/products/created-to-do-great-things/azalea-front.webp", back: "images/products/created-to-do-great-things/azalea-back.webp" },
       natural:    { front: "images/products/created-to-do-great-things/natural-front.webp", back: "images/products/created-to-do-great-things/natural-back.webp" },
       sport_grey: { front: "images/products/created-to-do-great-things/sport_grey-front.webp", back: "images/products/created-to-do-great-things/sport_grey-back.webp" },
-      charcoal:   { front: "images/products/created-to-do-great-things/charcoal-front.webp", back: "images/products/created-to-do-great-things/charcoal-back.webp" },
       black:      { front: "images/products/created-to-do-great-things/black-front.webp", back: "images/products/created-to-do-great-things/black-back.webp" }
     }
   },
@@ -214,7 +210,6 @@ var PRODUCTS = [
       light_pink: { front: "images/products/kinder-braver-smarter-stronger/light_pink-front.webp", back: "images/products/kinder-braver-smarter-stronger/light_pink-back.webp" },
       gold:       { front: "images/products/kinder-braver-smarter-stronger/gold-front.webp", back: "images/products/kinder-braver-smarter-stronger/gold-back.webp" },
       natural:    { front: "images/products/kinder-braver-smarter-stronger/natural-front.webp", back: "images/products/kinder-braver-smarter-stronger/natural-back.webp" },
-      charcoal:   { front: "images/products/kinder-braver-smarter-stronger/charcoal-front.webp", back: "images/products/kinder-braver-smarter-stronger/charcoal-back.webp" },
       black:      { front: "images/products/kinder-braver-smarter-stronger/black-front.webp", back: "images/products/kinder-braver-smarter-stronger/black-back.webp" }
     }
   }
@@ -230,3 +225,10 @@ function forgeMerchCheckout(order) {
   }
   return false; // not connected yet: the cart shows an honest notice
 }
+
+/* SHIPPING (used by the cart and by checkout)
+   freeOver: order subtotal for free standard shipping. flatRate: shipping under that. */
+var SHIPPING = { freeOver: 70, flatRate: 12, countries: ["US"] };
+
+/* Lets the checkout server read this file. Leave this line last. */
+if (typeof module !== "undefined") module.exports = { SITE: SITE, COLORS: COLORS, PRODUCTS: PRODUCTS, TRACKS: TRACKS, SHIPPING: SHIPPING };
