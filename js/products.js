@@ -137,7 +137,7 @@ var PRODUCTS = [
   {
     id: "learn-build-lead",
     name: "Learn Build Lead",
-    price: 25,                                  // CONFIRM PRICE
+    price: 29.99,
     categories: ["boys", "secular"],
     description: "LEARN BUILD LEAD on the front. A BRIGHTER GENERATION with the Forge anvil on the back.",
     sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
@@ -154,7 +154,7 @@ var PRODUCTS = [
     id: "forge-knight",
     preview: "back",                           // opens on the back view
     name: "Forge Knight",
-    price: 25,                                  // CONFIRM PRICE
+    price: 29.99,
     categories: ["boys", "secular"],
     description: "FORGE chest logo on the front. The Forge knight with FORGE LEARNING ACADEMY on the back.",
     sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
@@ -169,7 +169,7 @@ var PRODUCTS = [
   {
     id: "forge-princess",
     name: "Forge Princess",
-    price: 25,                                  // CONFIRM PRICE
+    price: 29.99,
     categories: ["girls", "secular"],
     description: "The Forge princess knight with FORGE LEARNING ACADEMY on the front.",
     sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
@@ -187,7 +187,7 @@ var PRODUCTS = [
     id: "created-to-do-great-things",
     preview: "back",                           // opens on the back view
     name: "Created to Do Great Things",
-    price: 25,                                  // CONFIRM PRICE
+    price: 29.99,
     categories: ["girls", "secular"],
     description: "CREATED TO DO GREAT THINGS script with a crown on the front. The Forge princess knight on the back.",
     sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
@@ -204,7 +204,7 @@ var PRODUCTS = [
     id: "kinder-braver-smarter-stronger",
     preview: "back",                           // opens on the back view
     name: "Kinder Braver Smarter Stronger",
-    price: 25,                                  // CONFIRM PRICE
+    price: 29.99,
     categories: ["girls", "secular"],
     description: "Small Forge princess knight on the front. Rainbow and crown with KINDER BRAVER SMARTER STRONGER on the back.",
     sizes: ["XS", "S", "M", "L", "XL"],         // youth sizes, CONFIRM
