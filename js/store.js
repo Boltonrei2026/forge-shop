@@ -18,7 +18,11 @@
   };
   var byId = function (id) { return PRODUCTS.find(function (p) { return p.id === id; }); };
   var colorInfo = function (k) { return COLORS[k] || { label: k, hex: "#8A94A8" }; };
-  var colorKeys = function (p) { return Object.keys(p.colors); };
+  // Kids' shirts: only offer color/size combos that exist in Printful (data/printful-variants.json)
+  var PF = null;
+  var isPrintful = function (p) { return p.fulfillment ? p.fulfillment === "printful" : p.categories.some(function (c) { return c === "boys" || c === "girls"; }); };
+  var available = function (p, c, s) { return !PF || !isPrintful(p) || !PF[p.id] || !!PF[p.id][c + "|" + s]; };
+  var colorKeys = function (p) { return Object.keys(p.colors).filter(function (k) { return p.sizes.some(function (s) { return available(p, k, s); }); }); };
   var viewLabel = function (v) { return v === "back" ? "Back" : "Front"; };
   var firstView = function (p) { return p.preview === "back" ? "back" : "front"; };
   var otherView = function (p) { return firstView(p) === "back" ? "front" : "back"; };
@@ -211,7 +215,7 @@
   /* ---------- Product ---------- */
   function productPage(p, colorParam) {
     var key = collectionOf(p), c = key ? SITE.collections[key] : null;
-    var st = { color: p.colors[colorParam] ? colorParam : colorKeys(p)[0], view: firstView(p), size: null, qty: 1 };
+    var st = { color: colorKeys(p).indexOf(colorParam) !== -1 ? colorParam : colorKeys(p)[0], view: firstView(p), size: null, qty: 1 };
     setTitle(p.name);
     var related = key ? productsIn(key).filter(function (x) { return x.id !== p.id; }) : [];
     view.innerHTML = '<div class="fm-page"><div class="fm-wrap">' +
@@ -239,6 +243,7 @@
       "</div></div>";
     var el = $("[data-pdp]", view);
     function sync(animate) {
+      if (st.size && !available(p, st.color, st.size)) st.size = null;
       var stage = $("[data-stage]", el);
       stage.innerHTML = img(p, st.color, st.view, { eager: true });
       if (animate && !reduceMotion && stage.firstElementChild) stage.firstElementChild.classList.add("fm-fade");
@@ -246,6 +251,10 @@
       $$("[data-thumb]", el).forEach(function (t) { t.innerHTML = img(p, st.color, t.getAttribute("data-thumb"), { decorative: true, eager: true }); });
       [["color", st.color], ["view", st.view], ["size", st.size]].forEach(function (pair) {
         $$('[data-action="' + pair[0] + '"]', el).forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-value") === pair[1])); });
+      });
+      $$('[data-action="size"]', el).forEach(function (b) {
+        var ok = available(p, st.color, b.getAttribute("data-value"));
+        b.disabled = !ok; b.title = ok ? "" : "Not available in " + colorInfo(st.color).label;
       });
       $("[data-color-name]", el).textContent = colorInfo(st.color).label;
       $("[data-qty]", el).textContent = st.qty;
@@ -311,7 +320,7 @@
     try {
       var arr = JSON.parse(localStorage.getItem(SITE.storageKey) || "[]");
       if (!Array.isArray(arr)) return [];
-      return arr.filter(function (i) { var p = byId(i.id); return p && p.colors[i.color] && p.sizes.indexOf(i.size) !== -1 && i.qty > 0; });
+      return arr.filter(function (i) { var p = byId(i.id); return p && p.colors[i.color] && p.sizes.indexOf(i.size) !== -1 && available(p, i.color, i.size) && i.qty > 0; });
     } catch (e) { return []; }
   }
   function saveCart() { try { localStorage.setItem(SITE.storageKey, JSON.stringify(cart)); } catch (e) {} }
@@ -426,6 +435,7 @@
     } else if (e.key === "Tab" && drawer.classList.contains("is-open")) trapTab($(".fm-drawer__panel"), e);
   });
 
-  renderCart();
-  render(false);
+  fetch("/data/printful-variants.json").then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (m) { if (m && Object.keys(m).length) PF = m; }).catch(function () {})
+    .then(function () { cart = loadCart(); renderCart(); render(false); });
 })();

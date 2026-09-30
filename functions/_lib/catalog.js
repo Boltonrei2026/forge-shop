@@ -13,6 +13,8 @@ export function fulfillmentOf(p) {
   return p.categories.some((c) => c === "boys" || c === "girls") ? "printful" : "podpartner";
 }
 
+export const printfulMapped = (id) => !!printfulVariants[id];
+
 export function printfulVariantId(productId, color, size) {
   const m = printfulVariants[productId];
   return (m && m[color + "|" + size]) || null;

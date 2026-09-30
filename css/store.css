@@ -292,3 +292,4 @@ html.fm-lock{overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   #forge-merch *,#forge-merch *::before,#forge-merch *::after{animation:none!important;transition:none!important}
 }
+#forge-merch .fm-size:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed;background:none;color:var(--fm-fg);box-shadow:inset 0 0 0 1px var(--fm-rule)}

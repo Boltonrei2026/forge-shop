@@ -1,5 +1,5 @@
 // POST /api/checkout  { items: [{ id, color, size, qty }] }  ->  { url } of a Stripe Checkout page
-import { SITE, SHIPPING, byId, colorLabel, stripe, json } from "../_lib/catalog.js";
+import { SITE, SHIPPING, byId, colorLabel, fulfillmentOf, printfulMapped, printfulVariantId, stripe, json } from "../_lib/catalog.js";
 
 export async function onRequestPost({ request, env }) {
   if (!env.STRIPE_SECRET_KEY) return json({ error: "Checkout isn't configured yet." }, 500);
@@ -16,6 +16,8 @@ export async function onRequestPost({ request, env }) {
     const p = byId(it.id);
     const qty = Math.max(1, Math.min(99, parseInt(it.qty, 10) || 0));
     if (!p || !p.colors[it.color] || !p.sizes.includes(it.size)) return json({ error: "An item in your cart is no longer available. Please remove it and try again." }, 400);
+    if (fulfillmentOf(p) === "printful" && printfulMapped(p.id) && !printfulVariantId(p.id, it.color, it.size))
+      return json({ error: `${p.name} isn't available in ${colorLabel(it.color)}, size ${it.size}. Please remove it and try again.` }, 400);
     const cents = Math.round(p.price * 100);
     subtotal += cents * qty;
     const image = new URL(p.colors[it.color].front, SITE_URL(env, request)).href;
